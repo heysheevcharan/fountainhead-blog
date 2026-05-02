@@ -19,6 +19,7 @@ const pages = defineCollection({
   schema: z.object({
     title: z.string(),
     slug: z.string(),
+    description: z.string().optional(),
     showInNav: z.boolean().default(true),
     navOrder: z.number().default(99),
     // home page specific fields

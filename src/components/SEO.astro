@@ -6,6 +6,7 @@ interface Props {
   canonicalURL?: string;
   type?: 'website' | 'article';
   pubDate?: Date;
+  updatedDate?: Date;
 }
 
 const {
@@ -14,12 +15,14 @@ const {
   image = '/og-default.png',
   type = 'website',
   pubDate,
+  updatedDate,
 } = Astro.props;
 
-const siteTitle = 'Your Name'; // TODO: replace with your name
+const siteTitle = 'Sheev Charan';
 const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
 const canonicalURL = Astro.props.canonicalURL ?? new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
+const rssURL = new URL('/rss.xml', Astro.site).href;
 ---
 
 <!-- Primary -->
@@ -33,17 +36,28 @@ const ogImage = new URL(image, Astro.site).href;
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
 <meta property="og:site_name" content={siteTitle} />
+<meta property="og:locale" content="en_US" />
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
+<meta name="twitter:creator" content="@heysheevcharan" />
+<meta name="twitter:site" content="@heysheevcharan" />
 
 <!-- Article-specific -->
 {type === 'article' && pubDate && (
   <meta property="article:published_time" content={pubDate.toISOString()} />
+)}
+{type === 'article' && updatedDate && (
+  <meta property="article:modified_time" content={updatedDate.toISOString()} />
+)}
+{type === 'article' && (
+  <meta property="article:author" content={siteTitle} />
 )}
 
 <!-- RSS -->
@@ -51,5 +65,5 @@ const ogImage = new URL(image, Astro.site).href;
   rel="alternate"
   type="application/rss+xml"
   title={`${siteTitle} RSS Feed`}
-  href="/rss.xml"
+  href={rssURL}
 />

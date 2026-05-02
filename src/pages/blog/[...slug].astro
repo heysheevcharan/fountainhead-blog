@@ -14,6 +14,28 @@ export const getStaticPaths = (async () => {
 const { post } = Astro.props;
 const { Content } = await render(post);
 
+const canonicalURL = new URL(`/blog/${post.id}`, Astro.site).href;
+const ogImage = post.data.image
+  ? new URL(post.data.image, Astro.site).href
+  : new URL('/og-default.png', Astro.site).href;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.pubDate.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  author: {
+    '@type': 'Person',
+    name: 'Sheev Charan',
+    url: Astro.site,
+  },
+  image: ogImage,
+  url: canonicalURL,
+  mainEntityOfPage: canonicalURL,
+};
+
 function formatDate(date: Date) {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -29,7 +51,10 @@ function formatDate(date: Date) {
   image={post.data.image}
   type="article"
   pubDate={post.data.pubDate}
+  updatedDate={post.data.updatedDate}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
   <article>
     <header style="margin-bottom: 2.5rem;">
       <h1 style="font-size: 1.6rem; margin-bottom: 0.5rem;">{post.data.title}</h1>

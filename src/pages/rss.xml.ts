@@ -7,14 +7,14 @@ export async function GET(context: APIContext) {
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
   return rss({
-    title: 'Your Name', // TODO: replace
-    description: 'Personal blog — software, systems, and ideas.', // TODO: replace
+    title: 'Sheev Charan',
+    description: 'Writing on startups, AI, product thinking, and ideas worth spreading.',
     site: context.site!,
     items: posts.map((post) => ({
       title: post.data.title,
       pubDate: post.data.pubDate,
       description: post.data.description,
-      link: `/blog/${post.id}/`,
+      link: `/blog/${post.id}`,
     })),
     customData: '<language>en-us</language>',
   });

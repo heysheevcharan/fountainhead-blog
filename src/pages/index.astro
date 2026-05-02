@@ -12,6 +12,15 @@ if (!homePage) throw new Error(`home page not found. Available pages: ${allPages
 const { Content } = await render(homePage);
 const home = homePage.data;
 
+const personJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: home.name ?? 'Sheev Charan',
+  url: Astro.site,
+  description: home.tagline,
+  sameAs: [home.twitter, home.github, home.linkedin].filter(Boolean),
+};
+
 function formatDate(date: Date) {
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
@@ -25,6 +34,7 @@ function formatDate(date: Date) {
   title={home.name ?? home.title}
   description={`Personal blog of ${home.name ?? home.title} — ${home.tagline ?? ''}`}
 >
+  <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
   <h1>{home.name ?? home.title}</h1>
   {home.tagline && (
     <p class="text-muted" style="margin-bottom: 2rem;">{home.tagline}</p>
@@ -62,9 +72,9 @@ function formatDate(date: Date) {
       <h2 style="margin-top: 0;">elsewhere</h2>
       <ul style="list-style: none; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap;">
         {home.email && <li><a href={`mailto:${home.email}`}>email</a></li>}
-        {home.github && <li><a href={home.github} target="_blank" rel="noopener">github</a></li>}
-        {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener">x.com</a></li>}
-        {home.linkedin && <li><a href={home.linkedin} target="_blank" rel="noopener">linkedin</a></li>}
+        {home.github && <li><a href={home.github} target="_blank" rel="noopener noreferrer">github</a></li>}
+        {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener noreferrer">x.com</a></li>}
+        {home.linkedin && <li><a href={home.linkedin} target="_blank" rel="noopener noreferrer">linkedin</a></li>}
       </ul>
     </>
   )}

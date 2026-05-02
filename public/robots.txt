@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin
+
+Sitemap: https://sheevcharan.vercel.app/sitemap-index.xml

@@ -9,9 +9,10 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   pubDate?: Date;
+  updatedDate?: Date;
 }
 
-const { title, description, image, type, pubDate } = Astro.props;
+const { title, description, image, type, pubDate, updatedDate } = Astro.props;
 ---
 
 <!doctype html>
@@ -20,35 +21,24 @@ const { title, description, image, type, pubDate } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
     <SEO
       title={title}
       description={description}
       image={image}
       type={type}
       pubDate={pubDate}
+      updatedDate={updatedDate}
     />
   </head>
   <body>
     <div class="container">
       <Nav />
-
       <main>
         <slot />
       </main>
     </div>
-    <script>
-      // Redirect to /admin after Netlify Identity login
-      if (window.netlifyIdentity) {
-        window.netlifyIdentity.on('init', (user: unknown) => {
-          if (!user) {
-            window.netlifyIdentity.on('login', () => {
-              document.location.href = '/admin/';
-            });
-          }
-        });
-      }
-    </script>
   </body>
 </html>

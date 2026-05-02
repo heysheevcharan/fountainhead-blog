@@ -5,8 +5,15 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://yoursite.com', // TODO: replace with your actual domain
-  integrations: [mdx(), sitemap()],
+  site: 'https://sheevcharan.vercel.app', // TODO: update to custom domain when ready
+  integrations: [
+    mdx(),
+    sitemap({
+      filter: (page) => !page.includes('/admin'),
+      changefreq: 'weekly',
+      priority: 0.7,
+    }),
+  ],
   markdown: {
     shikiConfig: {
       theme: 'github-dark',

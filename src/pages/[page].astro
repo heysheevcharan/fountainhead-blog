@@ -20,7 +20,7 @@ const { Content } = await render(page);
 
 <Base
   title={page.data.title}
-  description={`${page.data.title} — Sheev Charan`}
+  description={page.data.description ?? `${page.data.title} — Sheev Charan`}
 >
   <h1>{page.data.title}</h1>
   <div class="prose" style="margin-top: 1.5rem;">

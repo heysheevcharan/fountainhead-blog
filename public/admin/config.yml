@@ -25,6 +25,11 @@ collections:
         name: slug
         widget: string
         hint: "URL path, e.g. /about or /projects (must start with /)"
+      - label: Meta Description
+        name: description
+        widget: string
+        required: false
+        hint: "SEO description shown in Google results (120-155 characters)"
       - label: Show in Nav
         name: showInNav
         widget: boolean
