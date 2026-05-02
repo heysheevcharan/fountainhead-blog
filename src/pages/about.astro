@@ -1,9 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import { getEntry } from 'astro:content';
+import { marked } from 'marked';
 
 const aboutEntry = await getEntry('pages', 'about');
 const about = aboutEntry?.data as Record<string, string>;
+
+function renderMarkdown(text: string): string {
+  if (!text) return '';
+  return marked.parse(
+    text
+      .replace(/==(.+?)==/g, '$1')
+      .replace(/\(tab:(https?[^)]+)\)/g, '($1)')
+  ) as string;
+}
 ---
 
 <Base
@@ -11,11 +21,5 @@ const about = aboutEntry?.data as Record<string, string>;
   description="About — background, interests, and how to get in touch."
 >
   <h1>about</h1>
-  <div class="prose" set:html={about.body
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/^/, '<p>')
-    .replace(/$/, '</p>')
-  } />
+  <div class="prose" set:html={renderMarkdown(about.body)} />
 </Base>
