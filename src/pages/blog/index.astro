@@ -40,18 +40,18 @@ const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
       </h2>
       <ul style="list-style: none; padding: 0;">
         {grouped[year].map((post) => (
-          <li style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap;">
-            <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; min-width: 6rem;">
-              {formatDate(post.data.pubDate)}
-            </span>
-            <div>
+          <li style="margin-bottom: 1.25rem;">
+            <div style="display: flex; gap: 1rem; align-items: baseline;">
+              <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; min-width: 6.5rem;">
+                {formatDate(post.data.pubDate)}
+              </span>
               <a href={`/blog/${post.id}`}>{post.data.title}</a>
-              {post.data.description && (
-                <p class="text-muted" style="margin: 0.1rem 0 0; font-size: 0.85rem;">
-                  {post.data.description}
-                </p>
-              )}
             </div>
+            {post.data.description && (
+              <p class="text-muted" style="margin: 0.2rem 0 0 7.5rem; font-size: 0.85rem;">
+                {post.data.description}
+              </p>
+            )}
           </li>
         ))}
       </ul>

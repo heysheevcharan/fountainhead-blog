@@ -37,8 +37,8 @@ function formatDate(date: Date) {
       <h2 style="margin-top: 0;">writing</h2>
       <ul style="list-style: none; padding: 0;">
         {posts.map((post) => (
-          <li style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap;">
-            <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums;">
+          <li style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: baseline;">
+            <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; min-width: 6.5rem;">
               {formatDate(post.data.pubDate)}
             </span>
             <a href={`/blog/${post.id}`} style="text-decoration-color: var(--border);">
