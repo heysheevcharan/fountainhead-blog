@@ -98,9 +98,6 @@ collections:
       - label: Title
         name: title
         widget: string
-      - label: Body
-        name: body
-        widget: markdown
       - label: Description
         name: description
         widget: string
@@ -189,3 +186,6 @@ collections:
         date_format: "YYYY-MM-DD"
         time_format: false
         required: false
+      - label: Body
+        name: body
+        widget: markdown
