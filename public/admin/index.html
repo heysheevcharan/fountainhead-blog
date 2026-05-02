@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex" />
     <title>Blog Admin</title>
+    <style>
+      /* Fix markdown editor to a comfortable fixed height with internal scroll */
+      [role="textbox"][contenteditable],
+      .cms-editor textarea,
+      textarea {
+        height: 520px !important;
+        max-height: 520px !important;
+        overflow-y: auto !important;
+        resize: none !important;
+      }
+    </style>
   </head>
   <body>
     <script type="module" src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
