@@ -1,0 +1,29 @@
+---
+published_date: 2026-03-04
+tags: [business, company, culture, entrepreneurship, talent, teams]
+---
+<a href="https://ibb.co/KxXNNHwb"><img src="https://i.ibb.co/XxbyyT8j/Gemini-Generated-Image-4ihi5v4ihi5v4ihi.png" alt="Gemini-Generated-Image-4ihi5v4ihi5v4ihi" border="0"></a>
+
+**I have a thesis**: _Founders who have worked in big tech for a long time (10+ years) end up struggling to build breakout companies despite their glorious careers. The meta-reason is that they start internalizing the value systems of these places and get surrounded by an intellectual monoculture that reinforces these beliefs from every direction._
+
+Take the example of a founder who worked at Google for 10+ years. First, they have to deeply internalize the value system of that place — if not, they would not last very long. Second, they are validated, valued, and promoted on the basis of these scaffolding technologies by their immediate peers and managers.
+
+But zoom out and think about Google's core business in the search engine market, and the value they provide is simple: reliable, relevant, and fast search results. All the scaffolding technologies exist to deliver on that promise.
+
+When these founders leave Google, they mistake the technology itself for the value because of intellectual monoculture. With hundreds of millions of dollars of impact within Google's context, they tend to miniaturize the technology and try to sell it to a different segment. But code derives its power from market context and customer insights.
+
+The very best ideas of any era are almost always misunderstood at the time. Imagine: if in 2019 you told a Google engineer that AI would generate 90% of all code, they would have called you ridiculous. We are living in that era now, but these shifts are nearly impossible to spot from inside a monoculture.
+
+Because these founders have credibility, the ability to build, and ideas that look very agreeable on paper, the majority of VCs end up funding them. One statistic tells the story: Google alumni raised over $100 billion in capital across 2,300+ companies, with very low breakout success.
+
+But there are exceptions to this rule. When founders go after the same market as the incumbent but with a completely different angle, they have a shot at creating a breakout company in that category. Three examples:
+
+1. The Anthropic team left OpenAI and went after the same AI market with a fundamentally different perspective on safety and alignment — today valued at $380 billion, with revenue growing 10x year over year.
+
+2. The Nuro team took the same autonomous vehicle technology from Waymo but reframed it entirely around goods delivery instead of passengers — today valued at $6 billion.
+
+3. The Wiz team came out of Microsoft's cloud security division, went after the same market, but unified it across all cloud platforms in a way nobody had done before — acquired by Google for $32 billion.
+
+So, in hindsight, it is better to deeply immerse oneself in the market context and customer insights, and not to fall in love with the technology — to look at it as a vehicle to deliver value, not the value itself.
+
+This reminds me of my favourite line from Game of Thrones: _Those on the margins often come to control the center, and those in the center make room for them, willingly or otherwise._

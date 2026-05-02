@@ -1,0 +1,27 @@
+---
+published_date: 2025-06-12
+tags: [AI, life, story, storytelling, success, talent, thinking]
+---
+I was talking to a UPSC aspirant who had spent 6 years trying to crack the exam, but could not.
+
+As with any endeavour, it becomes part of your story. You can't simply push it aside and move on.
+
+His aunt called me, perplexed, "Hey Sheev, he's been trying for a while but couldn't succeed. Now we want him to take up a job in IT. I heard AI is booming. What can he do?"
+
+That didn't make sense to me. His heart was clearly in public policy, governance, and public education, like any other UPSC aspirant. Why would he want to build software?
+
+I spoke with him, and my gut feeling was right. He knew far more about public policy than software products. But he was considering this option because his family wanted him to start earning and get married.
+
+The family was making these suggestions from a place of fear. Not the best.
+
+When we were jamming, I took a step back and thought, what would be a great story to tell?
+
+"A sincere UPSC aspirant who cares about public service discovers that AI can unlock his potential tenfold, and he goes on to do great things in AI policy, AI for public good, AI for education, and more."
+
+Now that's a beautiful story to tell. And it's a story only he can tell with authority and authenticity.
+
+Hearing this reframe, he felt genuinely excited about this new direction and relieved to have found a path that would respect his past.
+
+This shows how powerful narratives are, whether we tell them to ourselves or others.
+
+P.S.: It also shows that when a fundamental revolution like AI is happening, the playing field gets levelled.

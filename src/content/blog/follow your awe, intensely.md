@@ -1,0 +1,127 @@
+---
+published_date: 2024-08-23
+---
+I moved out of my parents' house and started living on my own.
+
+At the beginning of this year, I sat down and wrote down all the things
+I wanted to do with zero restrictions—just letting my stream of consciousness flow.
+
+One of the things that popped up was getting a place of my own and starting to live independently. I love my parents, but it felt like the right thing to do.
+
+Okay, so house hunting started, and it was a freaking nightmare. I gained a huge amount of respect for my parents for going through this over and over, given the nature of their jobs.
+
+I went through a rollercoaster of emotions and met different kinds of people in the process—fraudulent brokers, greedy owners, greedy brokers, insecure owners, and all other types of characters. After 20 days, I finally found a house.
+
+I chose the house for two reasons: 1/ I was awed by the owner, and 2/ I was awed by the architecture.
+
+The owner was sophisticated, empathetic, respectful, a good communicator, and, finally, shared my passion for good aesthetics. These are usually the qualities I admire in a person.  
+
+He chose me because he respected my reason for moving out of my parents' house and taking control of my life. He was planning to rent the place out to a family, not bachelors, but I guess that changed his mind.
+
+Second, the house was well-built-you can feel that the architect had good taste. It has good ventilation, an evenly distributed layout, a great location, and all the necessary amenities.
+
+It all worked out okay in the end. Every time I followed my awe, it worked out okay.
+
+When I dropped out of university and moved to Bangalore because the city gave me awe, it worked out okay.
+
+When I quit my previous job and joined a startup as the first full-timer because the founder gave me awe, it worked out okay.
+
+When I let go of relationships because they didn’t give me awe, it worked out okay.
+
+### Okay, but how do I find my awe?
+Not gonna lie, it's very tricky and painfully difficult—it's somewhat a combination of perseverance to keep looking, being honest with yourself, and empathy.
+
+There are other ways, like psychedelics and similar experiences—but I’ll leave those for now.
+
+### Perseverance to keep looking:
+Finding what gives you awe is a numbers game. You have to keep looking with curiosity. Approach every interaction with the intention of discovering it.
+
+You have to let yourself wander in the wild and take the path less traveled. You can't be content with the template handed to you—observe if you feel awe while you're exploring.
+
+Most often, what gives you awe might be something others don’t even notice or care about, so check for yourself, even if they dismiss it.
+
+### Being honest with yourself:
+Develop a deep and honest relationship with yourself. I realized that despite spending the past 26 years together, I know very little about what truly gives me awe and what takes it away.
+
+You have to allow yourself to feel awe without the fear of judgment—it can be about people, places, food, stories, or anything.
+
+Journaling two pages of unconstrained thoughts has been tremendously helpful—whether they’re good, bad, or ugly. It helps me plumb the crap out of my consciousness and let clear water flow.
+
+### Empathy:
+I used to be a very bad listener. It was always about me and what I had to say. But when I learned to let people tell their stories and listened empathetically, I inevitably found something that gave me awe every time. You can uncover goldmines of human wisdom, regardless of their age, gender, or whatever.
+
+People share their deepest stories when you ask questions with the genuine intention to understand. It can be as simple as asking, “How was your childhood?” or “What was your favorite thing to do growing up?”
+
+Empathy goes both ways, internal and external. You can ask yourself questions with a curiosity to know, and somehow your internal dialogue reveals what it truly thinks—and it’s often profound.
+
+### Now, how do I not kill my awe?
+Don’t be jealous or compare your life to someone else’s.  
+Don’t surround yourself with people who lie or cheat.  
+Don’t lie, especially to yourself.  
+Don’t force people into doing things they don’t find awe in.  
+Don’t stop looking when you’re not satisfied.  
+Don’t chicken out when you find something that gives you awe.  
+
+This list isn’t exhaustive, and it’s past my bedtime as I’m writing—so, this is the best I could come up with. I’d advise you to think deeply about what kills your awe.
+
+### Things that give me awe (in no particular order):
+People who are socially intelligent.  
+People who change societies.  
+People who are empathetic.  
+People who push my understanding of the world. 
+People who stand for something.
+People who value and exercise freedom of speech.
+People who live their lives intensely.
+People who have great taste.
+
+Understanding what gives people awe.  
+Understanding different cultures.  
+Listening to someone’s story.  
+The human spirit in general.  
+Persevering through the struggles of life.  
+The ability to provide clarity in ambiguous situations.  
+Psychedelic experiences. 
+
+Great products that change the world.  
+Design-centric companies.  
+Listening to great music.  
+Watching great movies.  
+Reading and writing something good.  
+The etymology of any language.  
+AI and its impact on society.  
+Interior design and aesthetics.  
+Great brands and their craftsmanship.  
+
+### Life reveals itself to you with awe:
+Finding awe enables you to uncover the story of your life. It reveals the mysteries of existence, showing you what truly matters and removing what doesn’t. It propels your story forward.
+
+
+You don’t even want to watch a movie or read a book which talks about the ordinary life of ordinary people, do you?. You want something that is just extraordinary, and following your awe allows you to live an extraordinary life.
+
+### A poem by Charles Bukowski
+if it doesn't come bursting out of you in spite of everything, don't do it.  
+unless it comes unasked out of your heart and your mind and your mouth and your gut, don't do it.  
+if you have to sit for hours staring at your computer screen or hunched over your typewriter searching for words, don't do it.  
+if you're doing it for money or fame, don't do it.  
+if you're doing it because you want women in your bed, don't do it.  
+if you have to sit there and rewrite it again and again, don't do it.  
+if it's hard work just thinking about doing it, don't do it.  
+if you're trying to write like somebody else, forget about it.  
+if you have to wait for it to roar out of you, then wait patiently. if it never does roar out of you, do something else.  
+
+
+if you first have to read it to your wife or your girlfriend or your boyfriend or your parents or to anybody at all, you're not ready.  
+
+don't be like so many writers, don't be like so many thousands of people who call themselves writers, don't be dull and boring and pretentious, don't be consumed with self-love.  
+the libraries of the world have yawned themselves to sleepover your kind. don't add to that.  
+don't do it. unless it comes out of your soul like a rocket, unless being still would drive you to madness or suicide or murder, don't do it.  
+unless the sun inside you is burning your gut, don't do it.  
+
+
+when it is truly time, and if you have been chosen, it will do it by itself and it will keep on doing it until you die or it dies in you.
+
+
+there is no other way.
+
+
+and there never was.

@@ -1,0 +1,39 @@
+---
+published_date: 2024-08-02
+tags: [contrarian, creativity, empathy, morality, progress]
+---
+my seven-year-old cousin is a very disagreeable kid. along with another friend, he started stealing money from his mother's purse. they used the money to buy chips, water bottles, and other supplies, then hid them in an old building near their house. when questioned, he simply said, "this is for when the apocalypse happens."
+
+to be honest, i was fascinated. he dared to do something dangerous and borderline illegal. to me, he's a rebel, but an unchanneled one.
+
+i immediately told my mother that this kid should learn to read and write well because that would make him unstoppably dangerous in the highest possible manner.
+
+in the bible, rebellion is considered a sin, but i would argue otherwise. the rebels, the misfits—they push the human race forward. they break the rules and change the game. they invented cars, planes, and phones. they created our modern civilization. they pushed us from living in huts to ultra-luxurious villas with infinity pools. to me, rebellion is the source of all progress.
+
+it's funny, my blog is called "inspired by rebels." and if you ask me how i would define a rebellion?
+
+freedom to produce anything and put it out there is rebellion.
+
+treating yourself as the ultimate audience for your art is rebellion. 
+
+having the balls to take a contrarian bet on something or someone is rebellion.
+
+pivoting your entire company into unknown waters based on a genuine insight is rebellion.
+
+having a strong moral compass and following it is rebellion.
+
+committing to something greater despite human limitations is rebellion.
+
+[loving](tab:https://sheevcharan.bearblog.dev/not-that-kind-of-love/) everyone around you without trying to change them is rebellion.
+
+having the guts to ask a girl out in public is rebellion.
+
+cultivating deep empathy and truth-seeking is rebellion.
+
+believing that you can create magic and change the world is rebellion.
+
+moving cities, changing jobs, leaving bad friendships, searching for good relationships—all of this is rebellion.
+
+so, who is a rebel? to me, it's someone who enchants you with their vision and puts fire in your belly.
+
+at the end of the day, it's the same old story we all love—the tale of the creative rebel who follows their inner passion to success. it holds out the hope that our lives can have both meaning and well-being, a hope that we don’t have to choose between integrity and wealth.

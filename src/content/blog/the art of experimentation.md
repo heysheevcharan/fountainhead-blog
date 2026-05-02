@@ -1,0 +1,21 @@
+---
+published_date: 2025-03-09
+tags: [curiosity, entrepreneurship, experimentation, success]
+---
+Today, I have been thinking a lot about experimentation.
+
+To create anything meaningful, you have to show up, run an experiment, put it out in the real world, and get feedback. This applies to music, painting, writing, entrepreneurship, or even teaching. It’s arrogant to think, "I will do something once, and the world should respond the way I want."
+
+The beauty is in unpredictability. Suppose you’re a tennis player—every forehand is a micro-experiment. You hit a cross-court, but your opponent fires a winner down the line. You learn from that experiment. You learn about the opponent, the nature of the game, your forehand, etc.
+
+You have to put it out there and trust the ether of the universe to respond. This feedback can come from an individual, a group, or sometimes, just pure silence. Gita says, “You have the right to work only but never to its fruits. Let not the fruits of action be your motive, nor let your attachment be to inaction.”
+
+That’s why people say, "Do what is work to others but play to you." The play grips you. You obsess over it and enjoy experimenting in that particular line of work. You bring your whole being into the process and do it just for the fun of it.
+
+Every successful person I know has tens of ideas and is experimenting all the time, but only 2-3 work out to be significant.
+
+&nbsp;
+
+Hope I was able to convince you to experiment more. But how do you pick what to experiment on?
+
+Simple. You have to let your emotions and feelings guide you. See what makes you lose track of time. If something sparks your curiosity, that’s your invitation to experiment. I will write more about this in the future.

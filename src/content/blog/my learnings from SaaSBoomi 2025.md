@@ -1,0 +1,29 @@
+---
+published_date: 2025-03-27
+tags: [SaaS, creativity, distribution, entrepreneurship, intelligence, startups, storytelling]
+---
+1/ Storytelling is the most critical skill of an entrepreneur. But it's incredibly hard. So after speaking to a lot of people, I came up with a framework to tell better stories.
+
+Great storytelling = Relevant facts + Emotional connection + Aligned values/goals
+
+2/ As [Paras](tabs:https://www.linkedin.com/in/paraschopra/) said, building organic distribution is very hard. You have to consistently put out high-quality content 3–4 times per week.
+
+3/ PMF is when people buy things from you for almost the same reasons.
+
+4/ [Arjun](tabs:https://www.linkedin.com/in/rarjunpillai/) made a great point: "Be in touch with the CEOs (& CXOs) of companies that serve similar customers as you. This is usually the best way to get life-changing exits."
+
+5/ You don't have to be exceptional to build exceptional value. This is counterintuitive, but all you need is the ability to take more shots than most people to succeed.
+
+6/ [Sanket](tabs:https://www.linkedin.com/in/sanketsh/) and his team obsess over one North Star: high-quality video output in his segment. This obsession helped him build one of the fastest-growing prosumer companies in the world.
+
+7/ The Bannister Effect is real. New-age AI companies are making tens of millions of dollars in ARR in under 4–8 weeks with teams of fewer than 15 people. Now that the psychological limitation is broken, there will be more companies attempting to do this.
+
+8/ A $20–25T new market opportunity is opening up because of AI. At least $5–7T of that value will be captured by startups.
+
+9/ Acquisitions happen for three reasons—tech, team, and revenue. The better positioned you are in all three, the better the outcome of the deal for you and your team.
+
+10/ For many scaled SaaS companies, there will be a cheaper, faster, better agentic startup solving the problem.
+
+11/ I played tennis growing up and thought pickleball was lame. Thanks to [Lightspeed India](tabs:https://lsvp.com/global-presence/lightspeed-india/), I finally gave it a shot and it's fun. I can see myself playing often. 
+
+Thinking is the most taxing human function, and this sets us apart from the rest of the species. But as intelligence (at least pattern matching) becomes abundant, creativity is the only alpha we can bring to the table.

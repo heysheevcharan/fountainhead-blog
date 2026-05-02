@@ -1,0 +1,19 @@
+---
+published_date: 2025-06-16
+tags: [AI, LLMs, creativity, curiosity, talent]
+---
+I was tinkering on some image models with my buddy Sahil the other day.
+
+He is an AI engineer who can make these AI systems do crazy things. He's also the kind of pro-gamer who destroys us and then hits us with the classic "skill issues" tag.
+
+But watching him prompt these image models? Mind-boggling.
+
+He'd casually throw in details about lighting, character positioning, environmental textures, camera angles—stuff you wouldn't even think to mention. And he wasn't even trying hard. It was unconscious.
+
+We were chatting yesterday and realized that in his early years, he built video games and spent countless hours obsessing over tiny visual details, studying how light hits surfaces, how characters move through spaces, and what makes a scene feel real.
+
+Now that skill translates perfectly to coaxing the exact image he wants from AI models.
+
+His gaming background taught him to see what most people miss. His game development experience taught him to articulate those details.
+
+Things connect in unexpected ways.

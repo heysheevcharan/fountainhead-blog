@@ -1,0 +1,17 @@
+---
+published_date: 2025-06-01
+tags: [AI, LLMs, distribution, politics]
+---
+<a href="https://ibb.co/PGsGdLXY"><img src="https://i.ibb.co/r2K2Vj8t/ai-02.jpg" alt="ai-02" border="0"></a>
+
+Everyone’s hyped about AI models, AGI, and billion-dollar valuations. But no one’s talking about a tiny Caribbean island that’s quietly making bank from the AI boom.
+
+Anguilla. Population: ~15,000. British territory. Gorgeous beaches. And now… a major player in the AI ecosystem. Not because they’re building LLMs, but because they own something everyone suddenly wants: the ".ai" domain.
+
+Yup, ".ai" is technically Anguilla’s country code. Introduced in 1995. Meant for local businesses, government sites, whatever. But fast-forward to now, and every startup that breathes “artificial intelligence” wants that two-letter ending.
+
+And here’s the wild part—Anguilla is now reportedly making somewhere between $30M to $100M annually just from domain registrations. That’s not some venture round. That’s recurring. Real cash. Flowing into a small island economy because the rest of the world can’t stop building “something-something.ai”.
+
+Anguilla didn't plan this. They didn't have some visionary government official who predicted the AI boom. They just happened to get the right two letters assigned to them when domain names were being handed out.
+
+A domain name that pays for roads, schools, and the future.
