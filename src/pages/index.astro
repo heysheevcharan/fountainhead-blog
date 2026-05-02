@@ -31,8 +31,8 @@ function formatDate(date: Date) {
 ---
 
 <Base
-  title={home.name ?? home.title}
-  description={`Personal blog of ${home.name ?? home.title} — ${home.tagline ?? ''}`}
+  title="inspired by rebels"
+  description="This blog is an attempt to meet like-minded people."
 >
   <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
   <h1>{home.name ?? home.title}</h1>
