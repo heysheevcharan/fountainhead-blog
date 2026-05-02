@@ -22,6 +22,11 @@ const grouped = posts.reduce<Record<string, typeof posts>>((acc, post) => {
 }, {});
 
 const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
+
+function truncate(text: string, maxChars = 120): string {
+  if (!text || text.length <= maxChars) return text;
+  return text.slice(0, maxChars).replace(/\s\S*$/, '') + '…';
+}
 ---
 
 <Base
@@ -48,8 +53,8 @@ const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
               <a href={`/blog/${post.id}`}>{post.data.title}</a>
             </div>
             {post.data.description && (
-              <p class="text-muted post-description" style="margin: 0.2rem 0 0 7.5rem; font-size: 0.85rem;">
-                {post.data.description}
+              <p class="text-muted" style="margin: 0.2rem 0 0 7.5rem; font-size: 0.85rem; line-height: 1.5;">
+                {truncate(post.data.description)}
               </p>
             )}
           </li>
