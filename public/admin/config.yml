@@ -69,7 +69,7 @@ collections:
         name: description
         widget: string
         required: false
-        hint: "Optional — shown in Google results (120-155 chars)"
+        hint: "Controls the text snippet shown under your page title in Google search results, and the preview text when shared on Twitter/X, LinkedIn, WhatsApp or iMessage. Keep it under 155 characters. Leave blank to auto-generate from page content."
       - label: Show in Nav
         name: showInNav
         widget: boolean
@@ -99,7 +99,7 @@ collections:
       - label: Description
         name: description
         widget: string
-        hint: "1-2 sentences for SEO and post list previews (120-155 chars)"
+        hint: "Shown under the post title in Google search results, on the blog list page, and when the post is shared on social media. Write 1-2 clean sentences, no markdown, under 155 characters."
       - label: Publish Date
         name: pubDate
         widget: datetime
