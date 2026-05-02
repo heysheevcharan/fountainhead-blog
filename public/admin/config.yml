@@ -8,6 +8,43 @@ media_folder: public/images/blog
 public_folder: /images/blog
 
 collections:
+  # ── Home page — personal details + bio ──────────────────────────────────────
+  - name: home
+    label: Home
+    files:
+      - name: home
+        label: Home Page
+        file: src/content/site-pages/home.mdx
+        fields:
+          - label: Your Name
+            name: name
+            widget: string
+          - label: Tagline
+            name: tagline
+            widget: string
+            hint: "Shown below your name, e.g. 'founder · bangalore'"
+          - label: Email
+            name: email
+            widget: string
+            required: false
+          - label: GitHub URL
+            name: github
+            widget: string
+            required: false
+          - label: X / Twitter URL
+            name: twitter
+            widget: string
+            required: false
+          - label: LinkedIn URL
+            name: linkedin
+            widget: string
+            required: false
+          - label: Bio
+            name: body
+            widget: markdown
+            hint: "Your homepage bio — supports markdown"
+
+  # ── Pages — about, now, projects, anything else ─────────────────────────────
   - name: pages
     label: Pages
     folder: src/content/site-pages
@@ -16,20 +53,27 @@ collections:
     slug: "{{slug}}"
     extension: mdx
     format: frontmatter
+    filter:
+      field: slug
+      value: "/"
+      pattern: "^(?!/).*"
     fields:
-      - label: Page Title
+      - label: Title
         name: title
         widget: string
-        hint: "Shown in the nav and as the page heading (e.g. 'about', 'projects')"
+        hint: "Shown in the nav and as the page heading (e.g. 'about', 'now')"
       - label: URL Slug
         name: slug
         widget: string
-        hint: "URL path, e.g. /about or /projects (must start with /)"
+        hint: "URL path — must start with / (e.g. /about, /now, /projects)"
+      - label: Content
+        name: body
+        widget: markdown
       - label: Meta Description
         name: description
         widget: string
         required: false
-        hint: "SEO description shown in Google results (120-155 characters)"
+        hint: "Optional — shown in Google results (120-155 chars)"
       - label: Show in Nav
         name: showInNav
         widget: boolean
@@ -38,41 +82,9 @@ collections:
         name: navOrder
         widget: number
         default: 99
-        hint: "Lower numbers appear first in the nav (home=1, blog=2, about=3)"
-      - label: Your Name
-        name: name
-        widget: string
-        required: false
-        hint: "Home page only — your display name"
-      - label: Tagline
-        name: tagline
-        widget: string
-        required: false
-        hint: "Home page only — shown below your name"
-      - label: Email
-        name: email
-        widget: string
-        required: false
-        hint: "Home page only"
-      - label: GitHub URL
-        name: github
-        widget: string
-        required: false
-        hint: "Home page only"
-      - label: X / Twitter URL
-        name: twitter
-        widget: string
-        required: false
-        hint: "Home page only"
-      - label: LinkedIn URL
-        name: linkedin
-        widget: string
-        required: false
-        hint: "Home page only"
-      - label: Content
-        name: body
-        widget: markdown
+        hint: "Lower = earlier in nav. home=1, blog=2, about=3"
 
+  # ── Blog posts ───────────────────────────────────────────────────────────────
   - name: blog
     label: Blog Posts
     folder: src/content/blog
@@ -85,10 +97,13 @@ collections:
       - label: Title
         name: title
         widget: string
+      - label: Body
+        name: body
+        widget: markdown
       - label: Description
         name: description
         widget: string
-        hint: "Short summary shown in post lists and SEO meta tags (1-2 sentences)"
+        hint: "1-2 sentences for SEO and post list previews (120-155 chars)"
       - label: Publish Date
         name: pubDate
         widget: datetime
@@ -96,24 +111,11 @@ collections:
         date_format: "YYYY-MM-DD"
         time_format: false
         default: ""
-      - label: Updated Date
-        name: updatedDate
-        widget: datetime
-        format: "YYYY-MM-DD"
-        date_format: "YYYY-MM-DD"
-        time_format: false
-        required: false
-      - label: Cover Image
-        name: image
-        widget: image
-        required: false
-        hint: "Used for Open Graph / social sharing preview"
       - label: Tags
         name: tags
         widget: select
         required: false
         multiple: true
-        hint: "Select all that apply. Can select multiple."
         options:
           - AI
           - LLMs
@@ -173,7 +175,16 @@ collections:
         name: draft
         widget: boolean
         default: false
-        hint: "Draft posts won't appear on the site"
-      - label: Body
-        name: body
-        widget: markdown
+        hint: "Toggle off to publish"
+      - label: Cover Image
+        name: image
+        widget: image
+        required: false
+        hint: "Used for social sharing preview (OG image)"
+      - label: Updated Date
+        name: updatedDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
