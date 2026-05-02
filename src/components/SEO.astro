@@ -19,7 +19,7 @@ const {
 } = Astro.props;
 
 const siteTitle = 'Sheev Charan';
-const fullTitle = title === siteTitle ? title : `${title} — ${siteTitle}`;
+const fullTitle = title === 'inspired by rebels' ? title : title === siteTitle ? title : `${title} — ${siteTitle}`;
 const canonicalURL = Astro.props.canonicalURL ?? new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
 const rssURL = new URL('/rss.xml', Astro.site).href;
