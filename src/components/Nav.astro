@@ -6,6 +6,7 @@ const otherPages = await getCollection('pages');
 
 const allNavItems = [
   ...homePages.map(p => ({ title: p.data.title, slug: p.data.slug, navOrder: p.data.navOrder ?? 1, showInNav: p.data.showInNav ?? true })),
+  { title: 'blog', slug: '/blog', navOrder: 2, showInNav: true }, // blog is a system route
   ...otherPages.map(p => ({ title: p.data.title, slug: p.data.slug, navOrder: p.data.navOrder ?? 99, showInNav: p.data.showInNav ?? true })),
 ].filter(p => p.showInNav).sort((a, b) => a.navOrder - b.navOrder);
 
