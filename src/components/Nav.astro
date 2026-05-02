@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+
+const pages = (await getCollection('pages'))
+  .filter(p => p.data.showInNav)
+  .sort((a, b) => a.data.navOrder - b.data.navOrder);
+
+const currentPath = Astro.url.pathname;
+---
+
+<nav>
+  {pages.map((page) => (
+    <a
+      href={page.data.slug}
+      aria-current={
+        page.data.slug === '/'
+          ? currentPath === '/' ? 'page' : undefined
+          : currentPath.startsWith(page.data.slug) ? 'page' : undefined
+      }
+    >
+      {page.data.title}
+    </a>
+  ))}
+</nav>

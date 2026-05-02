@@ -1,0 +1,29 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+// Generate a route for every page except home (which is index.astro)
+export const getStaticPaths = (async () => {
+  const pages = await getCollection('pages');
+  return pages
+    .filter(page => page.data.slug !== '/') // home is handled by index.astro
+    .map(page => ({
+      params: { page: page.data.slug.replace(/^\//, '') },
+      props: { page },
+    }));
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<Base
+  title={page.data.title}
+  description={`${page.data.title} — Sheev Charan`}
+>
+  <h1>{page.data.title}</h1>
+  <div class="prose" style="margin-top: 1.5rem;">
+    <Content />
+  </div>
+</Base>
