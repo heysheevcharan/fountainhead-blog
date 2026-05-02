@@ -8,6 +8,49 @@ media_folder: public/images/blog
 public_folder: /images/blog
 
 collections:
+  - name: pages
+    label: Pages
+    files:
+      - name: home
+        label: Home Page
+        file: src/content/pages/home.json
+        fields:
+          - label: Your Name
+            name: name
+            widget: string
+          - label: Tagline
+            name: tagline
+            widget: string
+            hint: "Shown below your name, e.g. 'software engineer · chennai'"
+          - label: Bio
+            name: bio
+            widget: text
+            hint: "Short paragraph about yourself"
+          - label: Email
+            name: email
+            widget: string
+            required: false
+          - label: GitHub URL
+            name: github
+            widget: string
+            required: false
+          - label: X / Twitter URL
+            name: twitter
+            widget: string
+            required: false
+          - label: LinkedIn URL
+            name: linkedin
+            widget: string
+            required: false
+      - name: about
+        label: About Page
+        file: src/content/pages/about.json
+        fields:
+          - label: Body
+            name: body
+            widget: markdown
+            hint: "Supports markdown — bold, links, headings etc."
+
   - name: blog
     label: Blog Posts
     folder: src/content/blog

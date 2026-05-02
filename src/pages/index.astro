@@ -1,10 +1,13 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 5);
+
+const homeEntry = await getEntry('pages', 'home');
+const home = homeEntry?.data as Record<string, string>;
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('en-US', {
@@ -16,20 +19,12 @@ function formatDate(date: Date) {
 ---
 
 <Base
-  title="Your Name"
-  description="Personal blog and portfolio of Your Name — software, writing, and ideas."
+  title={home.name}
+  description={`Personal blog of ${home.name} — ${home.tagline}`}
 >
-  <h1>Your Name</h1>
-  <p class="text-muted" style="margin-bottom: 2rem;">
-    <!-- TODO: add your title / one-liner here -->
-    software engineer · your city
-  </p>
-
-  <p>
-    <!-- TODO: replace with your bio -->
-    I'm a software engineer who loves building things. I write about software,
-    systems, and ideas that interest me.
-  </p>
+  <h1>{home.name}</h1>
+  <p class="text-muted" style="margin-bottom: 2rem;">{home.tagline}</p>
+  <p>{home.bio}</p>
 
   {posts.length > 0 && (
     <>
@@ -56,10 +51,9 @@ function formatDate(date: Date) {
   <hr class="divider" />
   <h2 style="margin-top: 0;">elsewhere</h2>
   <ul style="list-style: none; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap;">
-    <!-- TODO: add / remove links as needed -->
-    <li><a href="mailto:you@example.com">email</a></li>
-    <li><a href="https://github.com/yourusername" target="_blank" rel="noopener">github</a></li>
-    <li><a href="https://x.com/yourusername" target="_blank" rel="noopener">x.com</a></li>
-    <li><a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener">linkedin</a></li>
+    {home.email && <li><a href={`mailto:${home.email}`}>email</a></li>}
+    {home.github && <li><a href={home.github} target="_blank" rel="noopener">github</a></li>}
+    {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener">x.com</a></li>}
+    {home.linkedin && <li><a href={home.linkedin} target="_blank" rel="noopener">linkedin</a></li>}
   </ul>
 </Base>
