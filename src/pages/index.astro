@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5);
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+---
+
+<Base
+  title="Your Name"
+  description="Personal blog and portfolio of Your Name — software, writing, and ideas."
+>
+  <h1>Your Name</h1>
+  <p class="text-muted" style="margin-bottom: 2rem;">
+    <!-- TODO: add your title / one-liner here -->
+    software engineer · your city
+  </p>
+
+  <p>
+    <!-- TODO: replace with your bio -->
+    I'm a software engineer who loves building things. I write about software,
+    systems, and ideas that interest me.
+  </p>
+
+  {posts.length > 0 && (
+    <>
+      <hr class="divider" />
+      <h2 style="margin-top: 0;">writing</h2>
+      <ul style="list-style: none; padding: 0;">
+        {posts.map((post) => (
+          <li style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap;">
+            <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums;">
+              {formatDate(post.data.pubDate)}
+            </span>
+            <a href={`/blog/${post.id}`} style="text-decoration-color: var(--border);">
+              {post.data.title}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a href="/blog" class="text-muted" style="font-size: 0.875rem;">
+        all posts &rarr;
+      </a>
+    </>
+  )}
+
+  <hr class="divider" />
+  <h2 style="margin-top: 0;">elsewhere</h2>
+  <ul style="list-style: none; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap;">
+    <!-- TODO: add / remove links as needed -->
+    <li><a href="mailto:you@example.com">email</a></li>
+    <li><a href="https://github.com/yourusername" target="_blank" rel="noopener">github</a></li>
+    <li><a href="https://x.com/yourusername" target="_blank" rel="noopener">x.com</a></li>
+    <li><a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener">linkedin</a></li>
+  </ul>
+</Base>

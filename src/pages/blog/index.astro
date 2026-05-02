@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+function formatDate(date: Date) {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+// Group by year
+const grouped = posts.reduce<Record<string, typeof posts>>((acc, post) => {
+  const year = post.data.pubDate.getFullYear().toString();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {});
+
+const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
+---
+
+<Base
+  title="Blog"
+  description="All posts — writing on software, systems, and ideas."
+>
+  <h1>blog</h1>
+  <p class="text-muted" style="margin-bottom: 2.5rem;">
+    {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+  </p>
+
+  {years.map((year) => (
+    <section style="margin-bottom: 2.5rem;">
+      <h2 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; margin-top: 0;">
+        {year}
+      </h2>
+      <ul style="list-style: none; padding: 0;">
+        {grouped[year].map((post) => (
+          <li style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: baseline; flex-wrap: wrap;">
+            <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; min-width: 6rem;">
+              {formatDate(post.data.pubDate)}
+            </span>
+            <div>
+              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              {post.data.description && (
+                <p class="text-muted" style="margin: 0.1rem 0 0; font-size: 0.85rem;">
+                  {post.data.description}
+                </p>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {posts.length === 0 && (
+    <p class="text-muted">No posts yet. Check back soon.</p>
+  )}
+</Base>

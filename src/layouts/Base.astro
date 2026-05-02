@@ -1,0 +1,58 @@
+---
+import SEO from '../components/SEO.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type?: 'website' | 'article';
+  pubDate?: Date;
+}
+
+const { title, description, image, type, pubDate } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <SEO
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      pubDate={pubDate}
+    />
+  </head>
+  <body>
+    <div class="container">
+      <nav>
+        <a href="/" aria-current={currentPath === '/' ? 'page' : undefined}>home</a>
+        <a href="/blog" aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>blog</a>
+        <a href="/about" aria-current={currentPath === '/about' ? 'page' : undefined}>about</a>
+      </nav>
+
+      <main>
+        <slot />
+      </main>
+    </div>
+    <script>
+      // Redirect to /admin after Netlify Identity login
+      if (window.netlifyIdentity) {
+        window.netlifyIdentity.on('init', (user: unknown) => {
+          if (!user) {
+            window.netlifyIdentity.on('login', () => {
+              document.location.href = '/admin/';
+            });
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

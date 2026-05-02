@@ -1,0 +1,58 @@
+backend:
+  name: github
+  repo: GITHUB_USERNAME/GITHUB_REPO  # TODO: replace with your GitHub username/repo-name
+  branch: main
+  base_url: https://sveltia-cms-auth.your-worker.workers.dev  # TODO: replace after OAuth setup
+
+media_folder: public/images/blog
+public_folder: /images/blog
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: mdx
+    format: frontmatter
+    fields:
+      - label: Title
+        name: title
+        widget: string
+      - label: Description
+        name: description
+        widget: string
+        hint: "Short summary shown in post lists and SEO meta tags (1-2 sentences)"
+      - label: Publish Date
+        name: pubDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        default: ""
+      - label: Updated Date
+        name: updatedDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+      - label: Cover Image
+        name: image
+        widget: image
+        required: false
+        hint: "Used for Open Graph / social sharing preview"
+      - label: Tags
+        name: tags
+        widget: list
+        required: false
+        hint: "Comma-separated tags, e.g. engineering, life"
+      - label: Draft
+        name: draft
+        widget: boolean
+        default: false
+        hint: "Draft posts won't appear on the site"
+      - label: Body
+        name: body
+        widget: markdown
