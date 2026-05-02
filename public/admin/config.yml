@@ -110,9 +110,65 @@ collections:
         hint: "Used for Open Graph / social sharing preview"
       - label: Tags
         name: tags
-        widget: list
+        widget: select
         required: false
-        hint: "Comma-separated tags, e.g. engineering, life"
+        multiple: true
+        hint: "Select all that apply. Can select multiple."
+        options:
+          - AI
+          - LLMs
+          - SaaS
+          - b2b
+          - books
+          - business
+          - classics
+          - collaboration
+          - company
+          - contrarian
+          - creativity
+          - culture
+          - curiosity
+          - dating
+          - design
+          - distribution
+          - empathy
+          - entrepreneurship
+          - experimentation
+          - failure
+          - freedom
+          - hypothesis
+          - intelligence
+          - leadership
+          - life
+          - love
+          - mimetic
+          - momentum
+          - morality
+          - motivations
+          - physics
+          - play
+          - politics
+          - product
+          - progress
+          - psychology
+          - purpose
+          - religion
+          - self-discovery
+          - social
+          - startups
+          - story
+          - storytelling
+          - strategy
+          - success
+          - talent
+          - taste
+          - teams
+          - thinking
+          - time
+          - truth
+          - values
+          - vibecoding
+          - writing
       - label: Draft
         name: draft
         widget: boolean
