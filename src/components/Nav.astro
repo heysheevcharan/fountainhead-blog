@@ -1,24 +1,28 @@
 ---
 import { getCollection } from 'astro:content';
 
-const pages = (await getCollection('pages'))
-  .filter(p => p.data.showInNav)
-  .sort((a, b) => a.data.navOrder - b.data.navOrder);
+const homePages = await getCollection('home');
+const otherPages = await getCollection('pages');
+
+const allNavItems = [
+  ...homePages.map(p => ({ title: p.data.title, slug: p.data.slug, navOrder: p.data.navOrder ?? 1, showInNav: p.data.showInNav ?? true })),
+  ...otherPages.map(p => ({ title: p.data.title, slug: p.data.slug, navOrder: p.data.navOrder ?? 99, showInNav: p.data.showInNav ?? true })),
+].filter(p => p.showInNav).sort((a, b) => a.navOrder - b.navOrder);
 
 const currentPath = Astro.url.pathname;
 ---
 
 <nav>
-  {pages.map((page) => (
+  {allNavItems.map((page) => (
     <a
-      href={page.data.slug}
+      href={page.slug}
       aria-current={
-        page.data.slug === '/'
+        page.slug === '/'
           ? currentPath === '/' ? 'page' : undefined
-          : currentPath.startsWith(page.data.slug) ? 'page' : undefined
+          : currentPath.startsWith(page.slug) ? 'page' : undefined
       }
     >
-      {page.data.title}
+      {page.title}
     </a>
   ))}
 </nav>

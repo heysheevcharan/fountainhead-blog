@@ -22,7 +22,16 @@ const pages = defineCollection({
     description: z.string().optional(),
     showInNav: z.boolean().default(true),
     navOrder: z.number().default(99),
-    // home page specific fields
+  }),
+});
+
+const home = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/home' }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    showInNav: z.boolean().default(true),
+    navOrder: z.number().default(1),
     name: z.string().optional(),
     tagline: z.string().optional(),
     email: z.string().optional(),
@@ -32,4 +41,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { blog, pages };
+export const collections = { blog, pages, home };

@@ -6,9 +6,9 @@ const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 5);
 
-const allPages = await getCollection('pages');
-const homePage = allPages.find(p => p.data.slug === '/' || p.id === 'home' || p.id === 'home.mdx');
-if (!homePage) throw new Error(`home page not found. Available pages: ${allPages.map(p=>p.id).join(', ')}`);
+const allHomePages = await getCollection('home');
+const homePage = allHomePages[0];
+if (!homePage) throw new Error('home.mdx not found in src/content/home/');
 const { Content } = await render(homePage);
 const home = homePage.data;
 

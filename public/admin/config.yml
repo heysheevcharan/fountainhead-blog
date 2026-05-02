@@ -14,7 +14,7 @@ collections:
     files:
       - name: home
         label: Home Page
-        file: src/content/site-pages/home.mdx
+        file: src/content/home/home.mdx
         fields:
           - label: Your Name
             name: name
@@ -53,10 +53,6 @@ collections:
     slug: "{{slug}}"
     extension: mdx
     format: frontmatter
-    filter:
-      field: slug
-      value: "/"
-      pattern: "^(?!/).*"
     fields:
       - label: Title
         name: title
