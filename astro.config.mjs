@@ -5,7 +5,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://sheevcharan.vercel.app', // TODO: update to custom domain when ready
+  site: 'https://sheevcharan.com',
   integrations: [
     mdx(),
     sitemap({
