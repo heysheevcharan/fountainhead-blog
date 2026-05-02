@@ -89,6 +89,11 @@ collections:
     slug: "{{slug}}"
     extension: mdx
     format: frontmatter
+    sortable_fields:
+      - pubDate
+      - title
+    default_sort_field: pubDate
+    default_sort_direction: descending
     fields:
       - label: Title
         name: title
