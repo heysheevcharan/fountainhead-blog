@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { glob, file } from 'astro/loaders';
+import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
@@ -15,8 +15,20 @@ const blog = defineCollection({
 });
 
 const pages = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: './src/content/pages' }),
-  schema: z.record(z.string()),
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/site-pages' }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    showInNav: z.boolean().default(true),
+    navOrder: z.number().default(99),
+    // home page specific fields
+    name: z.string().optional(),
+    tagline: z.string().optional(),
+    email: z.string().optional(),
+    github: z.string().optional(),
+    twitter: z.string().optional(),
+    linkedin: z.string().optional(),
+  }),
 });
 
 export const collections = { blog, pages };

@@ -1,24 +1,16 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getCollection, getEntry } from 'astro:content';
-import { marked } from 'marked';
+import { getCollection, render } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 5);
 
-const homeEntry = await getEntry('pages', 'home');
-const home = homeEntry?.data as Record<string, string>;
-
-// Clean bearblog-specific syntax and render markdown
-function renderBio(text: string): string {
-  if (!text) return '';
-  return marked.parse(
-    text
-      .replace(/==(.+?)==/g, '$1')           // strip ==highlight== syntax
-      .replace(/\(tab:(https?[^)]+)\)/g, '($1)') // fix tab: links
-  ) as string;
-}
+const allPages = await getCollection('pages');
+const homePage = allPages.find(p => p.data.slug === '/' || p.id === 'home' || p.id === 'home.mdx');
+if (!homePage) throw new Error(`home page not found. Available pages: ${allPages.map(p=>p.id).join(', ')}`);
+const { Content } = await render(homePage);
+const home = homePage.data;
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('en-US', {
@@ -30,13 +22,17 @@ function formatDate(date: Date) {
 ---
 
 <Base
-  title={home.name}
-  description={`Personal blog of ${home.name} — ${home.tagline}`}
+  title={home.name ?? home.title}
+  description={`Personal blog of ${home.name ?? home.title} — ${home.tagline ?? ''}`}
 >
-  <h1>{home.name}</h1>
-  <p class="text-muted" style="margin-bottom: 2rem;">{home.tagline}</p>
+  <h1>{home.name ?? home.title}</h1>
+  {home.tagline && (
+    <p class="text-muted" style="margin-bottom: 2rem;">{home.tagline}</p>
+  )}
 
-  <div class="prose" set:html={renderBio(home.bio)} />
+  <div class="prose">
+    <Content />
+  </div>
 
   {posts.length > 0 && (
     <>
@@ -60,12 +56,16 @@ function formatDate(date: Date) {
     </>
   )}
 
-  <hr class="divider" />
-  <h2 style="margin-top: 0;">elsewhere</h2>
-  <ul style="list-style: none; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap;">
-    {home.email && <li><a href={`mailto:${home.email}`}>email</a></li>}
-    {home.github && <li><a href={home.github} target="_blank" rel="noopener">github</a></li>}
-    {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener">x.com</a></li>}
-    {home.linkedin && <li><a href={home.linkedin} target="_blank" rel="noopener">linkedin</a></li>}
-  </ul>
+  {(home.email || home.github || home.twitter || home.linkedin) && (
+    <>
+      <hr class="divider" />
+      <h2 style="margin-top: 0;">elsewhere</h2>
+      <ul style="list-style: none; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap;">
+        {home.email && <li><a href={`mailto:${home.email}`}>email</a></li>}
+        {home.github && <li><a href={home.github} target="_blank" rel="noopener">github</a></li>}
+        {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener">x.com</a></li>}
+        {home.linkedin && <li><a href={home.linkedin} target="_blank" rel="noopener">linkedin</a></li>}
+      </ul>
+    </>
+  )}
 </Base>

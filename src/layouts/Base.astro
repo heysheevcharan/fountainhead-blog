@@ -1,5 +1,6 @@
 ---
 import SEO from '../components/SEO.astro';
+import Nav from '../components/Nav.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -11,7 +12,6 @@ interface Props {
 }
 
 const { title, description, image, type, pubDate } = Astro.props;
-const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -32,11 +32,7 @@ const currentPath = Astro.url.pathname;
   </head>
   <body>
     <div class="container">
-      <nav>
-        <a href="/" aria-current={currentPath === '/' ? 'page' : undefined}>home</a>
-        <a href="/blog" aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}>blog</a>
-        <a href="/about" aria-current={currentPath === '/about' ? 'page' : undefined}>about</a>
-      </nav>
+      <Nav />
 
       <main>
         <slot />
