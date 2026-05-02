@@ -48,7 +48,7 @@ const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
               <a href={`/blog/${post.id}`}>{post.data.title}</a>
             </div>
             {post.data.description && (
-              <p class="text-muted" style="margin: 0.2rem 0 0 7.5rem; font-size: 0.85rem;">
+              <p class="text-muted post-description" style="margin: 0.2rem 0 0 7.5rem; font-size: 0.85rem;">
                 {post.data.description}
               </p>
             )}

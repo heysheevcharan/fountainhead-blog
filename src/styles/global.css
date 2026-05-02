@@ -261,3 +261,12 @@ nav a[aria-current="page"] {
   clip: rect(0,0,0,0);
   white-space: nowrap;
 }
+
+/* Blog list description — clamp to 2 lines */
+.post-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+}
