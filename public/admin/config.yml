@@ -10,7 +10,7 @@ public_folder: /images/blog
 collections:
   # ── Home page — personal details + bio ──────────────────────────────────────
   - name: home
-    label: Home
+    label: "Home (/)"
     files:
       - name: home
         label: Home Page
@@ -46,7 +46,7 @@ collections:
 
   # ── Pages — about, now, projects, anything else ─────────────────────────────
   - name: pages
-    label: Pages
+    label: "Pages (about, now, etc.)"
     folder: src/content/site-pages
     create: true
     delete: true
@@ -82,7 +82,7 @@ collections:
 
   # ── Blog posts ───────────────────────────────────────────────────────────────
   - name: blog
-    label: Blog Posts
+    label: "Blog Posts (/blog)"
     folder: src/content/blog
     create: true
     delete: true
