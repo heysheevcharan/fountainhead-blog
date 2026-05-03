@@ -80,6 +80,33 @@ collections:
         default: 99
         hint: "Lower = earlier in nav. home=1, blog=2, about=3"
 
+  # ── Travel ───────────────────────────────────────────────────────────────────
+  - name: travel
+    label: "Travel (/travel)"
+    folder: src/content/travel
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: mdx
+    format: frontmatter
+    fields:
+      - label: Location
+        name: location
+        widget: string
+        hint: "City or place name, e.g. Tokyo"
+      - label: Country
+        name: country
+        widget: string
+        hint: "e.g. Japan"
+      - label: Images
+        name: images
+        widget: list
+        field:
+          label: Image
+          name: image
+          widget: image
+        hint: "Upload photos for this location"
+
   # ── Blog posts ───────────────────────────────────────────────────────────────
   - name: blog
     label: "Blog Posts (/blog)"
