@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+
+const RSS_URL = 'https://www.goodreads.com/review/list_rss/74097056?key=kx9uoUy9230exwU1IfGzij49KZNfymBbf4Gll66nmn7lpCCj&shelf=read';
+
+let books: { title: string; author: string; link: string; dateAdded: string }[] = [];
+
+try {
+  const res = await fetch(RSS_URL);
+  const xml = await res.text();
+
+  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+
+  books = items.map((item) => {
+    const title = item.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/)?.[1]
+      ?? item.match(/<title>(.+?)<\/title>/)?.[1]
+      ?? 'Unknown';
+
+    const author = item.match(/<author_name>(.+?)<\/author_name>/)?.[1] ?? '';
+
+    const link = item.match(/<link><!\[CDATA\[(.+?)\]\]><\/link>/)?.[1]
+      ?? item.match(/<link>(.+?)<\/link>/)?.[1]
+      ?? '#';
+
+    const dateRaw = item.match(/<user_date_added><!\[CDATA\[(.+?)\]\]><\/user_date_added>/)?.[1]
+      ?? item.match(/<pubDate><!\[CDATA\[(.+?)\]\]><\/pubDate>/)?.[1]
+      ?? '';
+
+    const dateAdded = dateRaw
+      ? new Date(dateRaw).getFullYear().toString()
+      : '';
+
+    return { title, author, link, dateAdded };
+  });
+} catch (e) {
+  // fail silently — show empty state
+}
+
+// Group by year
+const grouped = books.reduce<Record<string, typeof books>>((acc, book) => {
+  const year = book.dateAdded || 'unknown';
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(book);
+  return acc;
+}, {});
+
+const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
+---
+
+<Base
+  title="Books"
+  description="Books I've read — pulled live from my Goodreads shelf."
+>
+  <h1>books</h1>
+  <p class="text-muted" style="margin-bottom: 2.5rem;">
+    {books.length} books read · via <a href="https://www.goodreads.com" target="_blank" rel="noopener noreferrer">Goodreads</a>
+  </p>
+
+  {years.map((year) => (
+    <section style="margin-bottom: 2.5rem;">
+      <h2 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; margin-top: 0;">
+        {year}
+      </h2>
+      <ul style="list-style: none; padding: 0;">
+        {grouped[year].map((book) => (
+          <li style="margin-bottom: 0.75rem;">
+            <a href={book.link} target="_blank" rel="noopener noreferrer">
+              {book.title}
+            </a>
+            {book.author && (
+              <span class="text-muted"> — {book.author}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {books.length === 0 && (
+    <p class="text-muted">Could not load books. Check back soon.</p>
+  )}
+</Base>
