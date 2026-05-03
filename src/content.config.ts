@@ -46,6 +46,7 @@ const travel = defineCollection({
   schema: z.object({
     location: z.string(),
     country: z.string(),
+    dateRange: z.string().optional(),
     images: z.array(z.string()),
   }),
 });

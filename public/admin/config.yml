@@ -98,6 +98,11 @@ collections:
         name: country
         widget: string
         hint: "e.g. Japan"
+      - label: Date Range
+        name: dateRange
+        widget: string
+        required: false
+        hint: "e.g. Mar 24 – Apr 16, 2026"
       - label: Images
         name: images
         widget: list

@@ -20,7 +20,7 @@ const places = await getCollection('travel');
         {place.data.location}
       </h2>
       <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 1rem;">
-        {place.data.country}
+        {place.data.country}{place.data.dateRange && ` · ${place.data.dateRange}`}
       </p>
 
       {place.data.images.length > 0 ? (
