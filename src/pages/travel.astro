@@ -3,6 +3,17 @@ import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
 const places = await getCollection('travel');
+
+/**
+ * Cloudinary helper to inject transformations
+ * @param url Full Cloudinary URL
+ * @param transform Transformation string (e.g., 'w_400,c_fill')
+ */
+function getCloudinaryUrl(url: string, transform: string): string {
+  if (!url.includes('cloudinary.com')) return url;
+  // Insert transformation after '/upload/'
+  return url.replace('/upload/', `/upload/${transform}/`);
+}
 ---
 
 <Base
@@ -26,9 +37,13 @@ const places = await getCollection('travel');
       {place.data.images.length > 0 ? (
         <div class="travel-grid">
           {place.data.images.map((img) => (
-            <button class="thumb" data-src={img} aria-label="View photo">
+            <button
+              class="thumb"
+              data-src={getCloudinaryUrl(img, 'q_auto,f_auto')}
+              aria-label="View photo"
+            >
               <img
-                src={img}
+                src={getCloudinaryUrl(img, 'w_400,c_fill,g_auto,q_auto,f_auto')}
                 alt={`${place.data.location}, ${place.data.country}`}
                 loading="lazy"
               />
