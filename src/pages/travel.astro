@@ -26,13 +26,13 @@ const places = await getCollection('travel');
       {place.data.images.length > 0 ? (
         <div class="travel-grid">
           {place.data.images.map((img) => (
-            <a href={img} target="_blank" rel="noopener noreferrer">
+            <button class="thumb" data-src={img} aria-label="View photo">
               <img
                 src={img}
                 alt={`${place.data.location}, ${place.data.country}`}
                 loading="lazy"
               />
-            </a>
+            </button>
           ))}
         </div>
       ) : (
@@ -46,22 +46,32 @@ const places = await getCollection('travel');
   )}
 </Base>
 
+<!-- Lightbox -->
+<div id="lightbox" aria-modal="true" role="dialog" aria-label="Photo viewer">
+  <button id="lightbox-close" aria-label="Close">&#x2715;</button>
+  <img id="lightbox-img" src="" alt="Travel photo" />
+</div>
+
 <style>
+  /* Grid */
   .travel-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.4rem;
   }
 
-  .travel-grid a {
+  .thumb {
     display: block;
     aspect-ratio: 1 / 1;
     overflow: hidden;
     border-radius: 4px;
     border: 1px solid var(--border);
+    padding: 0;
+    background: none;
+    cursor: pointer;
   }
 
-  .travel-grid img {
+  .thumb img {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -72,13 +82,91 @@ const places = await getCollection('travel');
     border-radius: 0;
   }
 
-  .travel-grid a:hover img {
+  .thumb:hover img {
     opacity: 0.85;
   }
 
-  @media (max-width: 480px) {
+  @media (max-width: 600px) {
     .travel-grid {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
     }
   }
+
+  /* Lightbox */
+  #lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #lightbox.open {
+    display: flex;
+  }
+
+  #lightbox-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 4px;
+    border: none;
+    margin: 0;
+  }
+
+  #lightbox-close {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+  }
+
+  #lightbox-close:hover {
+    opacity: 1;
+  }
 </style>
+
+<script>
+  const lightbox = document.getElementById('lightbox')!;
+  const lightboxImg = document.getElementById('lightbox-img') as HTMLImageElement;
+  const closeBtn = document.getElementById('lightbox-close')!;
+
+  // Open on thumbnail click
+  document.querySelectorAll<HTMLButtonElement>('.thumb').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const src = btn.dataset.src!;
+      lightboxImg.src = src;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  // Close on button click
+  closeBtn.addEventListener('click', closeLightbox);
+
+  // Close on backdrop click
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // Close on Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    lightboxImg.src = '';
+  }
+</script>
