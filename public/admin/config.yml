@@ -103,6 +103,13 @@ collections:
         widget: string
         required: false
         hint: "e.g. Mar 24 – Apr 16, 2026"
+      - label: Sort Date
+        name: sortDate
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        hint: "Used for sorting. Latest date appears first."
       - label: Images
         name: images
         widget: list

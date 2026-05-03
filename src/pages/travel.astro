@@ -2,7 +2,8 @@
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 
-const places = await getCollection('travel');
+const places = (await getCollection('travel'))
+  .sort((a, b) => b.data.sortDate.valueOf() - a.data.sortDate.valueOf());
 
 /**
  * Cloudinary helper to inject transformations
