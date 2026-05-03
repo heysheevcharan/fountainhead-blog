@@ -4,8 +4,8 @@ backend:
   branch: main
   base_url: https://decap-proxy.sheevstartup.workers.dev
 
-media_folder: public/images/blog
-public_folder: /images/blog
+media_folder: public/images
+public_folder: /images
 
 collections:
   # ── Home page — personal details + bio ──────────────────────────────────────
