@@ -371,8 +371,20 @@ mark {
   list-style: none;
   padding: 0;
   display: flex;
-  gap: 1.25rem;
+  gap: 2.5rem;
   flex-wrap: wrap;
+}
+
+.elsewhere-list li a {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.elsewhere-list li a:hover {
+  color: var(--text);
 }
 
 /* =============================================
