@@ -45,7 +45,7 @@ function truncate(text: string, maxChars = 120): string {
         {grouped[year].map((post) => (
           <li class="blog-index-item">
             <div class="blog-index-row">
-              <span class="text-muted blog-index-date">
+              <span class="log-date blog-index-date">
                 {formatDate(post.data.pubDate)}
               </span>
               <a href={`/blog/${post.id}`} class="blog-index-title">{post.data.title}</a>

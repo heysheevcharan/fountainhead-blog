@@ -51,7 +51,7 @@ function formatDate(date: Date) {
       <ul class="post-list">
         {posts.map((post) => (
           <li class="post-list-item">
-            <span class="text-muted post-list-date">
+            <span class="log-date post-list-date">
               {formatDate(post.data.pubDate)}
             </span>
             <a href={`/blog/${post.id}`} class="post-list-link">

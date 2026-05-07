@@ -4,32 +4,36 @@
 :root {
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-serif: Georgia, 'Times New Roman', serif;
 
-  /* Light */
-  --bg: #ffffff;
-  --bg-subtle: #f5f5f5;
-  --text: #111111;
-  --text-muted: #666666;
-  --border: #e5e5e5;
-  --link: #111111;
+  /* Light — aged paper */
+  --bg: #faf8f5;
+  --bg-subtle: #f0ede8;
+  --text: #1a1a1a;
+  --text-muted: #666055;
+  --border: #d8d4ce;
+  --link: #1a1a1a;
   --link-hover: #555555;
-  --code-bg: #f0f0f0;
-  --selection-bg: #111111;
-  --selection-text: #ffffff;
+  --code-bg: #edeae4;
+  --selection-bg: #1a1a1a;
+  --selection-text: #faf8f5;
+  --accent: #FF3C00;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f0f0f;
-    --bg-subtle: #1a1a1a;
-    --text: #e8e8e8;
-    --text-muted: #888888;
-    --border: #2a2a2a;
-    --link: #e8e8e8;
-    --link-hover: #aaaaaa;
-    --code-bg: #1e1e1e;
-    --selection-bg: #e8e8e8;
-    --selection-text: #0f0f0f;
+    /* Dark — warm charcoal */
+    --bg: #141210;
+    --bg-subtle: #1f1c19;
+    --text: #e6e2dc;
+    --text-muted: #8a857e;
+    --border: #2e2a25;
+    --link: #e6e2dc;
+    --link-hover: #b8b2a9;
+    --code-bg: #25221e;
+    --selection-bg: #e6e2dc;
+    --selection-text: #141210;
+    --accent: #FF3C00;
   }
 }
 
@@ -181,18 +185,51 @@ nav a[aria-current="page"] {
   margin-bottom: 0.35rem;
 }
 
+/* Monumental blockquotes */
 .prose blockquote {
-  border-left: 3px solid var(--border);
-  padding-left: 1rem;
-  margin: 1.5rem 0;
+  border-left: 4px solid var(--accent);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 2rem -0.5rem;
   color: var(--text-muted);
+  font-family: var(--font-serif);
+  font-size: 1.05rem;
   font-style: italic;
+  line-height: 1.6;
 }
 
+.prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* Page break asterism */
 .prose hr {
   border: none;
-  border-top: 1px solid var(--border);
-  margin: 2.5rem 0;
+  margin: 3rem 0;
+  text-align: center;
+  position: relative;
+  height: 1.5rem;
+}
+
+.prose hr::after {
+  content: "⁂";
+  font-size: 1.25rem;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* Highlighter marks */
+.prose mark,
+mark {
+  background: linear-gradient(
+    180deg,
+    transparent 55%,
+    color-mix(in srgb, var(--accent) 25%, transparent) 55%,
+    color-mix(in srgb, var(--accent) 25%, transparent) 95%,
+    transparent 95%
+  );
+  color: inherit;
+  padding: 0 0.15em;
+  border-radius: 2px;
 }
 
 /* Inline code */
@@ -309,6 +346,7 @@ nav a[aria-current="page"] {
   font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   min-width: 6.5rem;
+  font-family: var(--font-mono);
 }
 
 .post-list-link {
@@ -365,6 +403,43 @@ nav a[aria-current="page"] {
   }
 }
 
+/* =============================================
+   PS whisper
+   ============================================= */
+.ps-note {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text-muted);
+  border-left: 2px solid var(--border);
+  padding-left: 1rem;
+  margin-top: 2rem;
+}
+
+/* =============================================
+   Log entry dates
+   ============================================= */
+.log-date {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.log-date::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+/* =============================================
+   Accessibility
+   ============================================= */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -373,5 +448,3 @@ nav a[aria-current="page"] {
   clip: rect(0,0,0,0);
   white-space: nowrap;
 }
-
-
