@@ -14,6 +14,8 @@
   --link: #111111;
   --link-hover: #555555;
   --code-bg: #f0f0f0;
+  --selection-bg: #111111;
+  --selection-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,6 +28,8 @@
     --link: #e8e8e8;
     --link-hover: #aaaaaa;
     --code-bg: #1e1e1e;
+    --selection-bg: #e8e8e8;
+    --selection-text: #0f0f0f;
   }
 }
 
@@ -51,7 +55,13 @@ body {
   background-color: var(--bg);
   color: var(--text);
   line-height: 1.7;
-  padding: 0 1rem;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 0 1rem;
+  }
 }
 
 /* =============================================
@@ -72,9 +82,9 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text);
 }
 
-h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
-h2 { font-size: 1.2rem; margin: 2.5rem 0 1rem; }
-h3 { font-size: 1rem; margin: 2rem 0 0.75rem; }
+h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.35rem; margin: 2.5rem 0 1rem; }
+h3 { font-size: 1.05rem; margin: 2rem 0 0.75rem; }
 
 p {
   margin-bottom: 1.25rem;
@@ -85,19 +95,44 @@ strong { font-weight: 600; }
 em { font-style: italic; }
 
 /* =============================================
+   Selection
+   ============================================= */
+::selection {
+  background: var(--selection-bg);
+  color: var(--selection-text);
+}
+
+/* =============================================
+   Focus
+   ============================================= */
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* =============================================
    Links
    ============================================= */
 a {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: var(--border);
+  text-decoration-color: color-mix(in srgb, var(--border) 60%, var(--text) 40%);
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 
 a:hover {
   color: var(--link-hover);
   text-decoration-color: var(--link-hover);
+}
+
+nav a {
+  text-decoration: none;
+}
+
+nav a:focus-visible {
+  outline-offset: 4px;
 }
 
 /* =============================================
@@ -242,7 +277,8 @@ nav a[aria-current="page"] {
 .divider {
   border: none;
   border-top: 1px solid var(--border);
-  margin: 2rem 0;
+  opacity: 0.6;
+  margin: 3rem 0;
 }
 
 /* =============================================
@@ -253,7 +289,57 @@ nav a[aria-current="page"] {
   font-size: 0.875rem;
 }
 
-/* Substack embed */
+/* =============================================
+   Homepage post list
+   ============================================= */
+.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-list-item {
+  margin-bottom: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.post-list-date {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  min-width: 6.5rem;
+}
+
+.post-list-link {
+  text-decoration-color: var(--border);
+}
+
+@media (max-width: 500px) {
+  .post-list-item {
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 1.25rem;
+  }
+  .post-list-date {
+    min-width: auto;
+  }
+}
+
+/* =============================================
+   Elsewhere list
+   ============================================= */
+.elsewhere-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* =============================================
+   Substack embed
+   ============================================= */
 .substack-wrapper {
   width: 100%;
   border-radius: 6px;

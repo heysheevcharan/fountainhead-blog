@@ -49,6 +49,7 @@ const travel = defineCollection({
     dateRange: z.string().optional(),
     sortDate: z.coerce.date(),
     images: z.array(z.string()),
+    description: z.string().optional(),
   }),
 });
 

@@ -43,6 +43,20 @@ function formatDate(date: Date) {
     day: 'numeric',
   });
 }
+
+function readingTime(body: string): string {
+  const words = body.trim().split(/\s+/).length;
+  const mins = Math.ceil(words / 200);
+  return `${mins} min read`;
+}
+
+// Prev / next navigation (follows blog index order: newest → oldest)
+const allPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const currentIndex = allPosts.findIndex((p) => p.id === post.id);
+const newerPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
 ---
 
 <Base
@@ -56,24 +70,24 @@ function formatDate(date: Date) {
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
   <article>
-    <header style="margin-bottom: 2.5rem;">
-      <h1 style="font-size: 1.6rem; margin-bottom: 0.5rem;">{post.data.title}</h1>
+    <header style="margin-bottom: 3.5rem;">
+      <h1 style="margin-bottom: 1.25rem;">{post.data.title}</h1>
       <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <time datetime={post.data.pubDate.toISOString()} class="text-muted">
           {formatDate(post.data.pubDate)}
         </time>
+        <span class="text-muted">·</span>
+        <span class="text-muted">{readingTime(post.body)}</span>
         {post.data.updatedDate && (
-          <span class="text-muted">
+          <span class="text-muted" style="margin-left: auto;">
             updated {formatDate(post.data.updatedDate)}
           </span>
         )}
       </div>
       {post.data.tags && post.data.tags.length > 0 && (
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem;">
+        <div class="tag-list" style="margin-top: 1rem;">
           {post.data.tags.map((tag) => (
-            <span style="font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--border); border-radius: 4px; padding: 0.1em 0.5em;">
-              {tag}
-            </span>
+            <span class="tag">{tag}</span>
           ))}
         </div>
       )}
@@ -83,8 +97,104 @@ function formatDate(date: Date) {
       <Content />
     </div>
 
-    <footer style="margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
-      <a href="/blog" class="text-muted">&larr; all posts</a>
+    <footer class="post-footer">
+      <div class="post-nav">
+        {newerPost && (
+          <a href={`/blog/${newerPost.id}`} class="post-nav-link post-nav-newer">
+            <span class="post-nav-label">← Before</span>
+            <span class="post-nav-title">{newerPost.data.title}</span>
+          </a>
+        )}
+        {olderPost && (
+          <a href={`/blog/${olderPost.id}`} class="post-nav-link post-nav-older">
+            <span class="post-nav-label">Next →</span>
+            <span class="post-nav-title">{olderPost.data.title}</span>
+          </a>
+        )}
+      </div>
+      <a href="/blog" class="text-muted back-to-posts">← all posts</a>
     </footer>
   </article>
 </Base>
+
+<style>
+  .tag-list {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: var(--bg-subtle);
+    border-radius: 4px;
+    padding: 0.15em 0.5em;
+  }
+
+  .post-footer {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .post-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .post-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    text-decoration: none;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .post-nav-link:hover {
+    border-color: var(--text-muted);
+    background: var(--bg-subtle);
+  }
+
+  .post-nav-newer {
+    text-align: left;
+  }
+
+  .post-nav-older {
+    text-align: right;
+    grid-column: 2;
+  }
+
+  .post-nav-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .post-nav-title {
+    font-size: 0.9rem;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .back-to-posts {
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  @media (max-width: 500px) {
+    .post-nav {
+      grid-template-columns: 1fr;
+    }
+    .post-nav-older {
+      grid-column: 1;
+      text-align: left;
+    }
+  }
+</style>

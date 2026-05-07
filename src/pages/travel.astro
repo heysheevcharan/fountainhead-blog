@@ -31,9 +31,16 @@ function getCloudinaryUrl(url: string, transform: string): string {
       <h2 style="font-size: 1rem; margin-bottom: 0.25rem; margin-top: 0;">
         {place.data.location}
       </h2>
-      <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 1rem;">
+      <p class="text-muted" style="font-size: 0.8rem; margin-bottom: 0.5rem;">
         {place.data.country}{place.data.dateRange && ` · ${place.data.dateRange}`}
+        {place.data.images.length > 0 && ` · ${place.data.images.length} photos`}
       </p>
+
+      {place.data.description && (
+        <p class="text-muted" style="font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.6;">
+          {place.data.description}
+        </p>
+      )}
 
       {place.data.images.length > 0 ? (
         <div class="travel-grid">
@@ -72,8 +79,8 @@ function getCloudinaryUrl(url: string, transform: string): string {
   /* Grid */
   .travel-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 0.4rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
   }
 
   .thumb {
@@ -102,9 +109,15 @@ function getCloudinaryUrl(url: string, transform: string): string {
     opacity: 0.85;
   }
 
+  @media (max-width: 900px) {
+    .travel-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 600px) {
     .travel-grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
     }
   }
 

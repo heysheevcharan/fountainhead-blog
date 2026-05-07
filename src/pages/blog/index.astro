@@ -39,21 +39,19 @@ function truncate(text: string, maxChars = 120): string {
   </p>
 
   {years.map((year) => (
-    <section style="margin-bottom: 2.5rem;">
-      <h2 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; margin-top: 0;">
-        {year}
-      </h2>
-      <ul style="list-style: none; padding: 0;">
+    <section class="year-section">
+      <h2 class="year-heading">{year}</h2>
+      <ul class="blog-index-list">
         {grouped[year].map((post) => (
-          <li style="margin-bottom: 1.25rem;">
-            <div style="display: flex; gap: 1rem; align-items: baseline;">
-              <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; min-width: 6.5rem;">
+          <li class="blog-index-item">
+            <div class="blog-index-row">
+              <span class="text-muted blog-index-date">
                 {formatDate(post.data.pubDate)}
               </span>
-              <a href={`/blog/${post.id}`}>{post.data.title}</a>
+              <a href={`/blog/${post.id}`} class="blog-index-title">{post.data.title}</a>
             </div>
             {post.data.description && (
-              <p class="text-muted" style="margin: 0.2rem 0 0 7.5rem; font-size: 0.85rem; line-height: 1.5;">
+              <p class="text-muted blog-index-desc">
                 {truncate(post.data.description)}
               </p>
             )}
@@ -67,3 +65,64 @@ function truncate(text: string, maxChars = 120): string {
     <p class="text-muted">No posts yet. Check back soon.</p>
   )}
 </Base>
+
+<style>
+  .year-section {
+    margin-bottom: 2.5rem;
+  }
+
+  .year-heading {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    margin-top: 0;
+  }
+
+  .blog-index-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .blog-index-item {
+    margin-bottom: 1.25rem;
+  }
+
+  .blog-index-row {
+    display: flex;
+    gap: 1rem;
+    align-items: baseline;
+  }
+
+  .blog-index-date {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    min-width: 6.5rem;
+  }
+
+  .blog-index-title {
+    text-decoration-color: var(--border);
+  }
+
+  .blog-index-desc {
+    margin: 0.2rem 0 0 7.5rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 500px) {
+    .blog-index-row {
+      flex-direction: column;
+      gap: 0.15rem;
+    }
+    .blog-index-date {
+      min-width: auto;
+    }
+    .blog-index-desc {
+      margin-left: 0;
+      margin-top: 0.35rem;
+    }
+  }
+</style>

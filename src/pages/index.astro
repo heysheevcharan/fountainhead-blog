@@ -35,9 +35,9 @@ function formatDate(date: Date) {
   description="This blog is an attempt to meet like-minded people."
 >
   <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
-  <h1>{home.name ?? home.title}</h1>
+  <h1 style="margin-bottom: 0.75rem;">{home.name ?? home.title}</h1>
   {home.tagline && (
-    <p class="text-muted" style="margin-bottom: 2rem;">{home.tagline}</p>
+    <p class="text-muted" style="font-size: 1.1rem; margin-bottom: 2.5rem; line-height: 1.5;">{home.tagline}</p>
   )}
 
   <div class="prose">
@@ -48,13 +48,13 @@ function formatDate(date: Date) {
     <>
       <hr class="divider" />
       <h2 style="margin-top: 0;">writing</h2>
-      <ul style="list-style: none; padding: 0;">
+      <ul class="post-list">
         {posts.map((post) => (
-          <li style="margin-bottom: 1rem; display: flex; gap: 1rem; align-items: baseline;">
-            <span class="text-muted" style="flex-shrink: 0; font-size: 0.8rem; font-variant-numeric: tabular-nums; min-width: 6.5rem;">
+          <li class="post-list-item">
+            <span class="text-muted post-list-date">
               {formatDate(post.data.pubDate)}
             </span>
-            <a href={`/blog/${post.id}`} style="text-decoration-color: var(--border);">
+            <a href={`/blog/${post.id}`} class="post-list-link">
               {post.data.title}
             </a>
           </li>
@@ -70,7 +70,7 @@ function formatDate(date: Date) {
     <>
       <hr class="divider" />
       <h2 style="margin-top: 0;">elsewhere</h2>
-      <ul style="list-style: none; padding: 0; display: flex; gap: 1.25rem; flex-wrap: wrap;">
+      <ul class="elsewhere-list">
         {home.email && <li><a href={`mailto:${home.email}`}>{home.email}</a></li>}
         {home.github && <li><a href={home.github} target="_blank" rel="noopener noreferrer">github</a></li>}
         {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener noreferrer">x.com</a></li>}
