@@ -43,11 +43,39 @@ try {
       const cdata = cdataMatch[1];
       // Parse all <a href="https://letterboxd.com/film/SLUG/">Title</a>
       const filmMatches = [...cdata.matchAll(/<a href="https:\/\/letterboxd\.com\/film\/([^/]+)\/">([\s\S]*?)<\/a>/g)];
-      films = filmMatches.map(m => ({
+
+      const rawFilms = filmMatches.map(m => ({
+        slug: m[1],
         title: m[2].replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&quot;/g, '"').trim(),
         url: `https://letterboxd.com/film/${m[1]}/`,
         year: yearMap.get(m[1]) ?? null,
       }));
+
+      // For films without a year from diary, fetch the film page to extract it
+      const missingYear = rawFilms.filter(f => !f.year);
+      if (missingYear.length > 0) {
+        const yearFetches = await Promise.allSettled(
+          missingYear.map(async (f) => {
+            const r = await fetch(`https://letterboxd.com/film/${f.slug}/`, {
+              headers: { 'User-Agent': 'Mozilla/5.0' },
+            });
+            const html = await r.text();
+            const match = html.match(/<title>[^(]*\((\d{4})\)/);
+            return { slug: f.slug, year: match ? match[1] : null };
+          })
+        );
+        for (const result of yearFetches) {
+          if (result.status === 'fulfilled' && result.value.year) {
+            yearMap.set(result.value.slug, result.value.year);
+          }
+        }
+      }
+
+      films = rawFilms.map(f => ({
+        ...f,
+        year: yearMap.get(f.slug) ?? null,
+      }));
+
       // Sort A–Z by title
       films.sort((a, b) => a.title.localeCompare(b.title));
     }
