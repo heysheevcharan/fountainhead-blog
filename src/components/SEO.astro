@@ -36,6 +36,7 @@ const rssURL = new URL('/rss.xml', Astro.site).href;
 <meta property="og:image" content={ogImage} />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={fullTitle} />
 <meta property="og:site_name" content={siteTitle} />
 <meta property="og:locale" content="en_US" />
 
@@ -46,6 +47,7 @@ const rssURL = new URL('/rss.xml', Astro.site).href;
 <meta name="twitter:image" content={ogImage} />
 <meta name="twitter:creator" content="@heysheevcharan" />
 <meta name="twitter:site" content="@heysheevcharan" />
+<meta name="twitter:url" content={canonicalURL} />
 
 <!-- Article-specific -->
 {type === 'article' && pubDate && (
