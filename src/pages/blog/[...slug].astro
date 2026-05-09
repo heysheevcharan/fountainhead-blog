@@ -88,6 +88,14 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
       )}
     </header>
 
+    {post.data.image && (
+      <img
+        src={post.data.image}
+        alt={post.data.title}
+        class="cover-image"
+      />
+    )}
+
     <div class="prose">
       <Content />
     </div>
@@ -113,6 +121,15 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
 </Base>
 
 <style>
+  .cover-image {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+    display: block;
+  }
+
   .tag-list {
     display: flex;
     gap: 0.5rem;
