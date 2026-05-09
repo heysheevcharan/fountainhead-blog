@@ -5,6 +5,7 @@ const homePages = await getCollection('home');
 const otherPages = await getCollection('pages');
 
 const allNavItems = [
+  ...homePages.map(p => ({ title: p.data.title, slug: p.data.slug, navOrder: p.data.navOrder ?? 1, showInNav: p.data.showInNav ?? true })),
   { title: 'blog', slug: '/blog', navOrder: 2, showInNav: true },
   { title: 'books', slug: '/books', navOrder: 3, showInNav: true },
   { title: 'films', slug: '/films', navOrder: 4, showInNav: true },
