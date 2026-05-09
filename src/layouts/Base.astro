@@ -9,10 +9,9 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   pubDate?: Date;
-  updatedDate?: Date;
 }
 
-const { title, description, image, type, pubDate, updatedDate } = Astro.props;
+const { title, description, image, type, pubDate } = Astro.props;
 ---
 
 <!doctype html>
@@ -37,7 +36,6 @@ const { title, description, image, type, pubDate, updatedDate } = Astro.props;
       image={image}
       type={type}
       pubDate={pubDate}
-      updatedDate={updatedDate}
     />
   </head>
   <body>

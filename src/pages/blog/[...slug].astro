@@ -25,7 +25,7 @@ const jsonLd = {
   headline: post.data.title,
   description: post.data.description,
   datePublished: post.data.pubDate.toISOString(),
-  dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+  dateModified: post.data.pubDate.toISOString(),
   author: {
     '@type': 'Person',
     name: 'Sheev Charan',
@@ -65,7 +65,6 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
   image={post.data.image}
   type="article"
   pubDate={post.data.pubDate}
-  updatedDate={post.data.updatedDate}
 >
   <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
@@ -78,11 +77,7 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
         </time>
         <span class="text-muted">·</span>
         <span class="text-muted">{readingTime(post.body)}</span>
-        {post.data.updatedDate && (
-          <span class="text-muted" style="margin-left: auto;">
-            updated {formatDate(post.data.updatedDate)}
-          </span>
-        )}
+
       </div>
       {post.data.tags && post.data.tags.length > 0 && (
         <div class="tag-list" style="margin-top: 1rem;">

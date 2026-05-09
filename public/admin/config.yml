@@ -218,13 +218,6 @@ collections:
         widget: image
         required: false
         hint: "Used for social sharing preview (OG image)"
-      - label: Updated Date
-        name: updatedDate
-        widget: datetime
-        format: "YYYY-MM-DD"
-        date_format: "YYYY-MM-DD"
-        time_format: false
-        required: false
       - label: Body
         name: body
         widget: markdown
