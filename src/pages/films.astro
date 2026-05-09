@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+
+const RSS_URL = 'https://letterboxd.com/sheevcharan/rss/';
+
+interface Film {
+  title: string;
+  url: string;
+  year: string | null;
+}
+
+let films: Film[] = [];
+let fetchError = false;
+
+try {
+  const res = await fetch(RSS_URL);
+  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
+  const xml = await res.text();
+
+  // ── Extract all <item> blocks ──────────────────────────────────────────────
+  const itemBlocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => m[1]);
+
+  // ── Build slug → year map from diary entries ───────────────────────────────
+  const yearMap = new Map<string, string>();
+  for (const block of itemBlocks) {
+    const linkMatch = block.match(/<link>(https:\/\/letterboxd\.com\/sheevcharan\/film\/([^/]+)\/)<\/link>/);
+    const yearMatch = block.match(/<letterboxd:filmYear>(\d+)<\/letterboxd:filmYear>/);
+    if (linkMatch && yearMatch) {
+      const slug = linkMatch[2];
+      yearMap.set(slug, yearMatch[1]);
+    }
+  }
+
+  // ── Find the Recommendations list item ────────────────────────────────────
+  const recItem = itemBlocks.find(block =>
+    /<title>Recommendations<\/title>/.test(block)
+  );
+
+  if (recItem) {
+    // Extract CDATA block
+    const cdataMatch = recItem.match(/<!\[CDATA\[([\s\S]*?)\]\]>/);
+    if (cdataMatch) {
+      const cdata = cdataMatch[1];
+      // Parse all <a href="https://letterboxd.com/film/SLUG/">Title</a>
+      const filmMatches = [...cdata.matchAll(/<a href="https:\/\/letterboxd\.com\/film\/([^/]+)\/">([\s\S]*?)<\/a>/g)];
+      films = filmMatches.map(m => ({
+        title: m[2].replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&quot;/g, '"').trim(),
+        url: `https://letterboxd.com/film/${m[1]}/`,
+        year: yearMap.get(m[1]) ?? null,
+      }));
+      // Sort A–Z by title
+      films.sort((a, b) => a.title.localeCompare(b.title));
+    }
+  }
+} catch (e) {
+  fetchError = true;
+}
+---
+
+<Base
+  title="Films"
+  description="Films I recommend watching."
+>
+  <h1>films</h1>
+  <p class="text-muted" style="margin-bottom: 2.5rem;">
+    {fetchError
+      ? 'could not load films right now'
+      : `${films.length} ${films.length === 1 ? 'film' : 'films'}`}
+  </p>
+
+  {!fetchError && films.length > 0 && (
+    <ul class="film-list">
+      {films.map((film) => (
+        <li class="film-item">
+          <a href={film.url} target="_blank" rel="noopener noreferrer" class="film-title">
+            {film.title}
+          </a>
+          {film.year && (
+            <span class="log-date film-year">{film.year}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {!fetchError && films.length === 0 && (
+    <p class="text-muted">no films yet.</p>
+  )}
+</Base>
+
+<style>
+  .film-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .film-item {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.35rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .film-item:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .film-title {
+    text-decoration: none;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+
+  .film-title:hover {
+    color: var(--accent);
+  }
+
+  .film-year {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+  }
+</style>
