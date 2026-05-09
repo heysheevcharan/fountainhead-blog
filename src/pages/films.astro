@@ -1,7 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const RSS_URL = 'https://letterboxd.com/sheevcharan/rss/';
+const LIST_URL = 'https://letterboxd.com/sheevcharan/list/recommendations/';
+const RSS_URL  = 'https://letterboxd.com/sheevcharan/rss/';
 
 interface Film {
   title: string;
@@ -13,73 +14,55 @@ let films: Film[] = [];
 let fetchError = false;
 
 try {
-  const res = await fetch(RSS_URL);
-  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status}`);
-  const xml = await res.text();
+  // ── Fetch list page + RSS in parallel ─────────────────────────────────────
+  const [listRes, rssRes] = await Promise.all([
+    fetch(LIST_URL, { headers: { 'User-Agent': 'Mozilla/5.0' } }),
+    fetch(RSS_URL),
+  ]);
 
-  // ── Extract all <item> blocks ──────────────────────────────────────────────
-  const itemBlocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => m[1]);
+  const [listHtml, xml] = await Promise.all([listRes.text(), rssRes.text()]);
 
-  // ── Build slug → year map from diary entries ───────────────────────────────
+  // ── Build slug → year map from RSS diary entries ───────────────────────────
   const yearMap = new Map<string, string>();
+  const itemBlocks = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(m => m[1]);
   for (const block of itemBlocks) {
-    const linkMatch = block.match(/<link>(https:\/\/letterboxd\.com\/sheevcharan\/film\/([^/]+)\/)<\/link>/);
+    const linkMatch = block.match(/<link>https:\/\/letterboxd\.com\/sheevcharan\/film\/([^/]+)\/<\/link>/);
     const yearMatch = block.match(/<letterboxd:filmYear>(\d+)<\/letterboxd:filmYear>/);
-    if (linkMatch && yearMatch) {
-      const slug = linkMatch[2];
-      yearMap.set(slug, yearMatch[1]);
-    }
+    if (linkMatch && yearMatch) yearMap.set(linkMatch[1], yearMatch[1]);
   }
 
-  // ── Find the Recommendations list item ────────────────────────────────────
-  const recItem = itemBlocks.find(block =>
-    /<title>Recommendations<\/title>/.test(block)
+  // ── Extract all film slugs from the list page HTML ────────────────────────
+  const slugs = [...new Set(
+    [...listHtml.matchAll(/\/film\/([a-z0-9][a-z0-9-]+[a-z0-9])\//g)]
+      .map(m => m[1])
+      .filter(s => !['films', 'add', 'edit', 'activity', 'watchlist', 'lists', 'diary', 'reviews', 'likes', 'tags', 'network', 'following', 'settings', 'about', 'pro', 'journal', 'apps', 'welcome', 'contact', 'legal'].includes(s))
+  )];
+
+  // ── Fetch each film page in parallel to get title + year ──────────────────
+  const filmFetches = await Promise.allSettled(
+    slugs.map(async (slug) => {
+      // Use year from RSS if already known
+      if (yearMap.has(slug)) {
+        // Still need the title — get it from the film page
+      }
+      const r = await fetch(`https://letterboxd.com/film/${slug}/`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+      const html = await r.text();
+      const titleMatch = html.match(/<title>[^a-zA-Z0-9\u00C0-\u024F\u0400-\u04FF]*(.*?)\s*\((\d{4})\)\s+directed by/);
+      const title = titleMatch ? titleMatch[1].replace(/^lrm;/, '').trim() : slug;
+      const year = yearMap.get(slug) ?? titleMatch?.[2] ?? null;
+      return { slug, title, url: `https://letterboxd.com/film/${slug}/`, year };
+    })
   );
 
-  if (recItem) {
-    // Extract CDATA block
-    const cdataMatch = recItem.match(/<!\[CDATA\[([\s\S]*?)\]\]>/);
-    if (cdataMatch) {
-      const cdata = cdataMatch[1];
-      // Parse all <a href="https://letterboxd.com/film/SLUG/">Title</a>
-      const filmMatches = [...cdata.matchAll(/<a href="https:\/\/letterboxd\.com\/film\/([^/]+)\/">([\s\S]*?)<\/a>/g)];
+  films = filmFetches
+    .filter(r => r.status === 'fulfilled')
+    .map(r => (r as PromiseFulfilledResult<Film & { slug: string }>).value);
 
-      const rawFilms = filmMatches.map(m => ({
-        slug: m[1],
-        title: m[2].replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&quot;/g, '"').trim(),
-        url: `https://letterboxd.com/film/${m[1]}/`,
-        year: yearMap.get(m[1]) ?? null,
-      }));
+  // Sort A–Z
+  films.sort((a, b) => a.title.localeCompare(b.title));
 
-      // For films without a year from diary, fetch the film page to extract it
-      const missingYear = rawFilms.filter(f => !f.year);
-      if (missingYear.length > 0) {
-        const yearFetches = await Promise.allSettled(
-          missingYear.map(async (f) => {
-            const r = await fetch(`https://letterboxd.com/film/${f.slug}/`, {
-              headers: { 'User-Agent': 'Mozilla/5.0' },
-            });
-            const html = await r.text();
-            const match = html.match(/<title>[^(]*\((\d{4})\)/);
-            return { slug: f.slug, year: match ? match[1] : null };
-          })
-        );
-        for (const result of yearFetches) {
-          if (result.status === 'fulfilled' && result.value.year) {
-            yearMap.set(result.value.slug, result.value.year);
-          }
-        }
-      }
-
-      films = rawFilms.map(f => ({
-        ...f,
-        year: yearMap.get(f.slug) ?? null,
-      }));
-
-      // Sort A–Z by title
-      films.sort((a, b) => a.title.localeCompare(b.title));
-    }
-  }
 } catch (e) {
   fetchError = true;
 }
