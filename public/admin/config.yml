@@ -8,6 +8,22 @@ media_folder: public/images
 public_folder: /images
 
 collections:
+  # ── Tags ─────────────────────────────────────────────────────────────────────
+  - name: tags
+    label: "Tags"
+    label_singular: Tag
+    folder: src/content/tags
+    create: true
+    delete: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    fields:
+      - label: Title
+        name: title
+        widget: string
+        hint: "Tag name exactly as it appears on posts (e.g. AI, b2b, self-discovery)"
+
   # ── Home page — personal details + bio ──────────────────────────────────────
   - name: home
     label: "Home (/)"
@@ -150,64 +166,13 @@ collections:
         default: ""
       - label: Tags
         name: tags
-        widget: select
+        widget: relation
+        collection: tags
+        search_fields: [title]
+        display_fields: [title]
+        value_field: title
         required: false
         multiple: true
-        options:
-          - AI
-          - LLMs
-          - SaaS
-          - b2b
-          - books
-          - business
-          - classics
-          - collaboration
-          - company
-          - contrarian
-          - creativity
-          - culture
-          - curiosity
-          - dating
-          - design
-          - distribution
-          - empathy
-          - entrepreneurship
-          - experimentation
-          - failure
-          - freedom
-          - hypothesis
-          - intelligence
-          - leadership
-          - life
-          - love
-          - mimetic
-          - momentum
-          - morality
-          - motivations
-          - physics
-          - play
-          - politics
-          - product
-          - progress
-          - psychology
-          - purpose
-          - religion
-          - self-discovery
-          - social
-          - startups
-          - story
-          - storytelling
-          - strategy
-          - success
-          - talent
-          - taste
-          - teams
-          - thinking
-          - time
-          - truth
-          - values
-          - vibecoding
-          - writing
       - label: Draft
         name: draft
         widget: boolean
