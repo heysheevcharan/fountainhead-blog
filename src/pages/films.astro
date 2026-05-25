@@ -60,8 +60,12 @@ try {
     .filter(r => r.status === 'fulfilled')
     .map(r => (r as PromiseFulfilledResult<Film & { slug: string }>).value);
 
-  // Sort A–Z
-  films.sort((a, b) => a.title.localeCompare(b.title));
+  // Sort chronologically by release year (oldest first)
+  films.sort((a, b) => {
+    const yearA = a.year ? parseInt(a.year, 10) : 0;
+    const yearB = b.year ? parseInt(b.year, 10) : 0;
+    return yearA - yearB;
+  });
 
 } catch (e) {
   fetchError = true;
