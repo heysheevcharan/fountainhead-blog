@@ -39,7 +39,7 @@ We spent around 2–2.5 hours thinking through what would be foundational values
   </div>
 </div>
 
-<style>{`
+<style is:global>{`
   .pdf-container {
     margin: 2.5rem 0;
     width: 100%;
@@ -53,21 +53,22 @@ We spent around 2–2.5 hours thinking through what would be foundational values
   .pdf-mobile-fallback {
     display: none;
   }
-  .pdf-button {
+  .pdf-button,
+  .pdf-button:visited,
+  .pdf-button:hover,
+  .pdf-button:active {
     display: inline-block;
-    background: var(--text);
+    background: var(--text) !important;
     color: var(--bg) !important;
     padding: 0.75rem 1.5rem;
     border-radius: 6px;
-    text-decoration: none;
+    text-decoration: none !important;
     font-weight: 500;
     font-size: 0.95rem;
     transition: opacity 0.15s;
   }
   .pdf-button:hover {
     opacity: 0.9;
-    color: var(--bg) !important;
-    text-decoration: none;
   }
 
   @media (max-width: 768px) {
