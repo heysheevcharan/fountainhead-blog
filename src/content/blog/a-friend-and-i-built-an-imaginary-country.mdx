@@ -32,9 +32,7 @@ We spent around 2–2.5 hours thinking through what would be foundational values
     <a 
       href="/hiraeth-vision.pdf" 
       target="_blank" 
-      style="display: inline-block; background: var(--text); color: var(--bg); padding: 0.75rem 1.5rem; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 0.95rem; transition: opacity 0.15s;" 
-      onmouseover="this.style.opacity='0.9'" 
-      onmouseout="this.style.opacity='1'"
+      class="pdf-button"
     >
       Open PDF in New Tab
     </a>
@@ -54,6 +52,22 @@ We spent around 2–2.5 hours thinking through what would be foundational values
   }
   .pdf-mobile-fallback {
     display: none;
+  }
+  .pdf-button {
+    display: inline-block;
+    background: var(--text);
+    color: var(--bg) !important;
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: opacity 0.15s;
+  }
+  .pdf-button:hover {
+    opacity: 0.9;
+    color: var(--bg) !important;
+    text-decoration: none;
   }
 
   @media (max-width: 768px) {
