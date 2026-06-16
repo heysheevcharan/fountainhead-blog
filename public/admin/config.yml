@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: heysheevcharan/blog
+  repo: heysheevcharan/fountainhead-blog
   branch: main
   base_url: https://decap-proxy.sheevstartup.workers.dev
 
