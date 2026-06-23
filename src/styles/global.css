@@ -122,13 +122,13 @@ a {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: var(--border);
+  text-decoration-color: var(--accent);
   transition: color 0.15s, text-decoration-color 0.15s;
 }
 
 a:hover {
   color: var(--link-hover);
-  text-decoration-color: var(--link-hover);
+  text-decoration-color: var(--accent);
 }
 
 nav a {
@@ -350,7 +350,7 @@ mark {
 }
 
 .post-list-link {
-  text-decoration-color: var(--border);
+  text-decoration-color: var(--accent);
 }
 
 @media (max-width: 500px) {
