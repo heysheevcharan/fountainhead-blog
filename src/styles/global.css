@@ -574,6 +574,9 @@ body.homepage {
 }
 
 .prose a.footnote-ref,
-.prose .footnote-backref {
+.prose a[data-footnote-ref],
+.prose .footnote-backref,
+.prose a[data-footnote-backref],
+.prose a.data-footnote-backref {
   text-decoration: none;
 }
