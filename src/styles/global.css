@@ -569,6 +569,7 @@ body.homepage {
 }
 
 .prose .footnotes li p {
+  display: inline;
   margin-bottom: 0;
 }
 
