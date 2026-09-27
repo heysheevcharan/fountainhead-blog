@@ -70,7 +70,7 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
 
   <article>
     <header style="margin-bottom: 3.5rem;">
-      <h1 style="margin-bottom: 1.25rem;">{post.data.title}</h1>
+      <h1>{post.data.title}</h1>
       <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
         <time datetime={post.data.pubDate.toISOString()} class="log-date">
           {formatDate(post.data.pubDate)}
@@ -137,7 +137,7 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
   }
 
   .tag {
-    font-size: 0.8rem;
+    font-size: 11pt;
     color: var(--text-muted);
     background: var(--bg-subtle);
     border-radius: 4px;
@@ -183,20 +183,20 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
   }
 
   .post-nav-label {
-    font-size: 0.75rem;
+    font-size: 11pt;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
 
   .post-nav-title {
-    font-size: 0.9rem;
+    font-size: 11pt;
     color: var(--text);
     font-weight: 500;
   }
 
   .back-to-posts {
-    font-size: 0.875rem;
+    font-size: 11pt;
     text-decoration: none;
   }
 

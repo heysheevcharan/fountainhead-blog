@@ -35,9 +35,9 @@ function formatDate(date: Date) {
   description="Sheev Charan writes about startups, product thinking, AI, creativity, and independent living. A blog inspired by rebels and contrarians."
 >
   <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
-  <h1 style="margin-bottom: 0.75rem;">{home.name ?? home.title}</h1>
+  <h1>{home.name ?? home.title}</h1>
   {home.tagline && (
-    <p class="text-muted" style="margin-bottom: 2.5rem; line-height: 1.5;">{home.tagline}</p>
+    <p class="text-muted" style="font-size: 15pt; margin-bottom: 18pt; line-height: 1.15;">{home.tagline}</p>
   )}
 
   <div class="prose">
@@ -60,7 +60,7 @@ function formatDate(date: Date) {
           </li>
         ))}
       </ul>
-      <a href="/blog" class="text-muted" style="font-size: 0.875rem;">
+      <a href="/blog" class="text-muted" style="font-size: 11pt;">
         all posts &rarr;
       </a>
     </>
@@ -81,7 +81,7 @@ function formatDate(date: Date) {
 
   <hr class="divider" />
   <h2 style="margin-top: 0;">newsletter</h2>
-  <p class="text-muted" style="font-size: 0.875rem; margin-bottom: 1.25rem;">
+  <p class="text-muted" style="font-size: 11pt; margin-bottom: 14pt;">
     Get new posts in your inbox.
   </p>
   <div class="substack-wrapper">
