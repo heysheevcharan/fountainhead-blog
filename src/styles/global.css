@@ -6,10 +6,6 @@
   --font-mono: Arial;
   --font-serif: Arial;
 
-  /* Google Docs layout */
-  --canvas: var(--bg);
-  --page-bg: var(--bg);
-
   /* Light — aged paper */
   --bg: #faf8f5;
   --bg-subtle: #f0ede8;
@@ -60,49 +56,42 @@ html {
 
 body {
   font-family: var(--font-sans);
-  font-size: 11pt;
-  background-color: var(--canvas);
+  background-color: var(--bg);
   color: var(--text);
-  line-height: 1.15;
-  padding: 0;
+  line-height: 1.7;
+  padding: 0 1.5rem;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 0 1rem;
+  }
 }
 
 /* =============================================
-   Layout — Google Docs page
+   Layout
    ============================================= */
-.page {
-  width: 210mm;
-  min-height: 297mm;
-  margin: 2rem auto 4rem;
-  padding: 1in;
-  background-color: var(--page-bg);
-}
-
-@media (max-width: 880px) {
-  .page {
-    width: 100%;
-    min-height: auto;
-    margin: 0;
-    padding: 1.5rem 1.25rem;
-  }
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4rem 0 6rem;
 }
 
 /* =============================================
    Typography
    ============================================= */
 h1, h2, h3, h4, h5, h6 {
-  line-height: 1.15;
-  font-weight: 400;
+  line-height: 1.3;
+  font-weight: 600;
   color: var(--text);
 }
 
-h1 { font-size: 26pt; margin: 0 0 24pt; }
-h2 { font-size: 20pt; margin: 20pt 0 15pt; }
-h3 { font-size: 16pt; margin: 16pt 0 12pt; }
-h4 { font-size: 14pt; margin: 14pt 0 10pt; }
+h1 { font-size: 1.75rem; margin-bottom: 0.5rem; }
+h2 { font-size: 1.35rem; margin: 2.5rem 0 1rem; }
+h3 { font-size: 1.05rem; margin: 2rem 0 0.75rem; }
 
 p {
-  margin-bottom: 14pt;
+  margin-bottom: 1.25rem;
   color: var(--text);
 }
 
@@ -151,22 +140,17 @@ nav a:focus-visible {
 }
 
 /* =============================================
-   Navigation — Docs toolbar
+   Navigation
    ============================================= */
 nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
   display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  padding: 0.875rem 1.5rem;
-  background-color: var(--page-bg);
+  gap: 1.25rem;
+  margin-bottom: 3rem;
   flex-wrap: wrap;
 }
 
 nav a {
-  font-size: 11pt;
+  font-size: 0.9rem;
   text-decoration: none;
   color: var(--text-muted);
 }
@@ -179,30 +163,38 @@ nav a[aria-current="page"] {
 /* =============================================
    Prose (blog post content)
    ============================================= */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
 .prose p {
-  margin-bottom: 14pt;
+  margin-bottom: 1.25rem;
 }
 
 .prose ul,
 .prose ol {
-  padding-left: 18pt;
-  margin-bottom: 14pt;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
 .prose li {
-  margin-bottom: 8pt;
+  margin-bottom: 0.35rem;
 }
 
-/* Blockquotes */
+/* Monumental blockquotes */
 .prose blockquote {
   border-left: 4px solid var(--accent);
-  padding: 0 0 0 18pt;
-  margin: 14pt 0;
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 2rem -0.5rem;
   color: var(--text-muted);
   font-family: var(--font-serif);
-  font-size: 11pt;
+  font-size: 1.05rem;
   font-style: italic;
-  line-height: 1.15;
+  line-height: 1.6;
 }
 
 .prose blockquote p:last-child {
@@ -212,7 +204,7 @@ nav a[aria-current="page"] {
 /* Page break asterism */
 .prose hr {
   border: none;
-  margin: 24pt 0;
+  margin: 3rem 0;
   text-align: center;
   position: relative;
   height: 1.5rem;
@@ -220,7 +212,7 @@ nav a[aria-current="page"] {
 
 .prose hr::after {
   content: "⁂";
-  font-size: 16pt;
+  font-size: 1.25rem;
   color: var(--text-muted);
   opacity: 0.5;
 }
@@ -243,7 +235,7 @@ mark {
 /* Inline code */
 .prose :not(pre) > code {
   font-family: var(--font-mono);
-  font-size: 11pt;
+  font-size: 0.875em;
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -253,7 +245,7 @@ mark {
 /* Code blocks */
 .prose pre {
   font-family: var(--font-mono);
-  font-size: 11pt;
+  font-size: 0.875rem;
   background: var(--code-bg) !important;
   border: 1px solid var(--border);
   border-radius: 6px;
@@ -300,7 +292,7 @@ mark {
 .prose table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 11pt;
+  font-size: 0.9rem;
   margin: 1.5rem 0;
 }
 
@@ -323,7 +315,7 @@ mark {
   border: none;
   border-top: 1px solid var(--border);
   opacity: 0.6;
-  margin: 24pt 0;
+  margin: 3rem 0;
 }
 
 /* =============================================
@@ -331,7 +323,7 @@ mark {
    ============================================= */
 .text-muted {
   color: var(--text-muted);
-  font-size: 11pt;
+  font-size: 0.875rem;
 }
 
 /* =============================================
@@ -343,7 +335,7 @@ mark {
 }
 
 .post-list-item {
-  margin-bottom: 8pt;
+  margin-bottom: 1rem;
   display: flex;
   gap: 1rem;
   align-items: baseline;
@@ -351,7 +343,7 @@ mark {
 
 .post-list-date {
   flex-shrink: 0;
-  font-size: 11pt;
+  font-size: 0.8rem;
   font-variant-numeric: tabular-nums;
   min-width: 6.5rem;
   font-family: var(--font-mono);
@@ -385,7 +377,7 @@ mark {
 
 .elsewhere-list li a {
   font-family: var(--font-mono);
-  font-size: 11pt;
+  font-size: 0.9rem;
   color: var(--text-muted);
   text-decoration: none;
   transition: color 0.15s;
@@ -427,7 +419,7 @@ mark {
    PS whisper
    ============================================= */
 .ps-note {
-  font-size: 11pt;
+  font-size: 0.9rem;
   font-style: italic;
   color: var(--text-muted);
   border-left: 2px solid var(--border);
@@ -440,7 +432,7 @@ mark {
    ============================================= */
 .log-date {
   font-family: var(--font-mono);
-  font-size: 11pt;
+  font-size: 0.8rem;
   color: var(--text-muted);
   display: inline-flex;
   align-items: center;
@@ -524,7 +516,7 @@ body.homepage {
   border-radius: 6px;
   text-decoration: none !important;
   font-weight: 500;
-  font-size: 11pt;
+  font-size: 0.95rem;
   transition: opacity 0.15s;
 }
 .pdf-button:hover {
