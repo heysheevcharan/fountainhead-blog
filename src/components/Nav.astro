@@ -20,6 +20,7 @@ const currentPath = Astro.url.pathname;
   {allNavItems.map((page) => (
     <a
       href={page.slug}
+      data-nav={page.slug === '/' ? 'home' : page.slug.replace(/^\//, '')}
       aria-current={
         page.slug === '/'
           ? currentPath === '/' ? 'page' : undefined

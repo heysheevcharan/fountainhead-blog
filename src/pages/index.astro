@@ -1,5 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero3D from '../components/lab/Hero3D.astro';
+import Newsletter from '../components/Newsletter.astro';
 import { getCollection, render } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -28,69 +31,252 @@ function formatDate(date: Date) {
     day: 'numeric',
   });
 }
+
+/* What sheev says when you walk in: the home.mdx body (CMS-editable), split into
+   speech bubbles. "**1/ …**" headings become the bubble title for the paragraph after. */
+function inlineMd(s: string) {
+  const esc = s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return esc
+    .replace(/\[([^\]]+)\]\(((?:[^()\s]|\([^()\s]*\))+)\)/g, (_m, text, url) => `<a href="${String(url).replace(/"/g, '%22')}" target="_blank" rel="noopener noreferrer">${text}</a>`)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>')
+    .replace(/\s*\n\s*/g, ' ');
+}
+const blocks = (homePage.body ?? '')
+  .split(/\n\s*\n/)
+  .map((b) => b.trim())
+  .filter(Boolean);
+const intro: { title?: string; html: string }[] = [];
+for (let i = 0; i < blocks.length; i++) {
+  const heading = blocks[i].match(/^\*\*(.+?)\*\*$/);
+  if (heading && i + 1 < blocks.length && !/^\*\*/.test(blocks[i + 1])) {
+    intro.push({ title: heading[1], html: inlineMd(blocks[i + 1]) });
+    i++;
+  } else {
+    intro.push({ html: inlineMd(blocks[i]) });
+  }
+}
 ---
 
 <Base
   title="inspired by rebels"
   description="Sheev Charan writes about startups, product thinking, AI, creativity, and independent living. A blog inspired by rebels and contrarians."
 >
+  <Hero3D
+    slot="hero"
+    scene="awe-house"
+    height="100svh"
+    intro={intro}
+    posts={posts.map((p) => ({ title: p.data.title, href: `/blog/${p.id}`, date: formatDate(p.data.pubDate) }))}
+  >
+    <header class="hero-head" data-hero-head>
+      <Nav />
+      <h1>{home.name ?? home.title}</h1>
+      {home.tagline && <p class="hero-tagline">{home.tagline}</p>}
+    </header>
+    <div class="hero-foot" data-hero-foot>
+      <div class="hero-status" data-hero-status></div>
+      <p class="hero-sections">
+        <a href="#writing">writing</a>, <a href="#elsewhere">elsewhere</a>, <a href="#newsletter">newsletter</a>
+        <span aria-hidden="true">↓</span>
+      </p>
+    </div>
+    <p class="hero-hint" data-hero-hint aria-hidden="true">
+      <span class="hint-mouse">‹ drag to look around ›</span><span class="hint-touch">‹ swipe to look around ›</span>
+    </p>
+  </Hero3D>
+
   <script type="application/ld+json" set:html={JSON.stringify(personJsonLd)} />
-  <h1 style="margin-bottom: 0.75rem;">{home.name ?? home.title}</h1>
-  {home.tagline && (
-    <p class="text-muted" style="margin-bottom: 2.5rem; line-height: 1.5;">{home.tagline}</p>
-  )}
 
-  <div class="prose">
-    <Content />
-  </div>
+  <details class="transcript">
+    <summary>read what sheev says, as text</summary>
+    <div class="prose">
+      <Content />
+    </div>
+  </details>
 
-  {posts.length > 0 && (
-    <>
-      <hr class="divider" />
-      <h2 style="margin-top: 0;">writing</h2>
-      <ul class="post-list">
-        {posts.map((post) => (
-          <li class="post-list-item">
-            <span class="log-date post-list-date">
-              {formatDate(post.data.pubDate)}
-            </span>
-            <a href={`/blog/${post.id}`} class="post-list-link">
-              {post.data.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-      <a href="/blog" class="text-muted" style="font-size: 0.875rem;">
-        all posts &rarr;
-      </a>
-    </>
-  )}
+  {
+    posts.length > 0 && (
+      <>
+        <hr class="divider" />
+        <h2 id="writing" style="margin-top: 0;">writing</h2>
+        <ul class="post-list">
+          {posts.map((post) => (
+            <li class="post-list-item">
+              <span class="log-date post-list-date">{formatDate(post.data.pubDate)}</span>
+              <a href={`/blog/${post.id}`} class="post-list-link">
+                {post.data.title}
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a href="/blog" class="text-muted" style="font-size: 0.875rem;">
+          all posts &rarr;
+        </a>
+      </>
+    )
+  }
 
-  {(home.email || home.github || home.twitter || home.linkedin) && (
-    <>
-      <hr class="divider" />
-      <h2 style="margin-top: 0;">elsewhere</h2>
-      <ul class="elsewhere-list">
-        {home.email && <li><a href={`mailto:${home.email}`}>email</a></li>}
-        {home.github && <li><a href={home.github} target="_blank" rel="noopener noreferrer">github</a></li>}
-        {home.twitter && <li><a href={home.twitter} target="_blank" rel="noopener noreferrer">x.com</a></li>}
-        {home.linkedin && <li><a href={home.linkedin} target="_blank" rel="noopener noreferrer">linkedin</a></li>}
-      </ul>
-    </>
-  )}
+  {
+    (home.email || home.github || home.twitter || home.linkedin) && (
+      <>
+        <hr class="divider" />
+        <h2 id="elsewhere" style="margin-top: 0;">elsewhere</h2>
+        <ul class="elsewhere-list">
+          {home.email && (
+            <li>
+              <a href={`mailto:${home.email}`}>email</a>
+            </li>
+          )}
+          {home.github && (
+            <li>
+              <a href={home.github} target="_blank" rel="noopener noreferrer">
+                github
+              </a>
+            </li>
+          )}
+          {home.twitter && (
+            <li>
+              <a href={home.twitter} target="_blank" rel="noopener noreferrer">
+                x.com
+              </a>
+            </li>
+          )}
+          {home.linkedin && (
+            <li>
+              <a href={home.linkedin} target="_blank" rel="noopener noreferrer">
+                linkedin
+              </a>
+            </li>
+          )}
+        </ul>
+      </>
+    )
+  }
 
   <hr class="divider" />
-  <h2 style="margin-top: 0;">newsletter</h2>
-  <p class="text-muted" style="font-size: 0.875rem; margin-bottom: 1.25rem;">
-    Get new posts in your inbox.
-  </p>
-  <div class="substack-wrapper">
-    <iframe
-      src="https://sheevcharan.substack.com/embed"
-      width="100%"
-      height="150"
-      frameborder="0"
-      scrolling="no"
-    ></iframe>
-  </div>
+  <Newsletter heading />
 </Base>
+
+<style>
+  /* full-screen hero, but the copy sits exactly where it does on every other page: the same
+     640px column (body padding 1.5rem / 1rem), the nav 4rem from the top (.container), so the
+     nav never moves when you go between pages. The room is framed around it (index.ts: fit). */
+  .hero-head,
+  .hero-foot {
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    max-width: 640px;
+    margin: 0 auto;
+    pointer-events: none;
+  }
+  .hero-head {
+    top: 4rem;
+  }
+  @media (max-width: 600px) {
+    .hero-head,
+    .hero-foot {
+      left: 1rem;
+      right: 1rem;
+    }
+  }
+  .hero-head :global(nav a) {
+    color: var(--text-muted);
+    pointer-events: auto;
+  }
+  .hero-head :global(nav a[aria-current='page']),
+  .hero-head :global(nav a:hover) {
+    color: var(--text);
+  }
+  .hero-head h1 {
+    margin: 0 0 0.5rem;
+    color: var(--text);
+    pointer-events: auto;
+  }
+  .hero-tagline {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    pointer-events: auto;
+  }
+  .hero-foot {
+    bottom: clamp(18px, 4vh, 36px);
+    display: grid;
+    gap: 0.4rem;
+  }
+  .hero-foot a {
+    pointer-events: auto;
+  }
+  .hero-sections {
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+  .hero-sections a {
+    color: var(--text-muted);
+    text-decoration-color: var(--border);
+  }
+  .hero-sections a:hover {
+    color: var(--text);
+    text-decoration-color: var(--accent);
+  }
+  .hero-hint {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(18px, 4vh, 36px);
+    transform: translateX(-50%);
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+  .hero-hint.is-done,
+  .hero-hint:global(.is-talking),
+  :global(.h3d:not(.is-ready)) .hero-hint {
+    opacity: 0;
+  }
+  .hint-touch {
+    display: none;
+  }
+  @media (pointer: coarse) {
+    .hint-mouse {
+      display: none;
+    }
+    .hint-touch {
+      display: inline;
+    }
+  }
+  .transcript {
+    margin-bottom: 0.5rem;
+  }
+  .transcript summary {
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+    list-style: none;
+  }
+  .transcript summary::before {
+    content: '▸ ';
+    color: var(--accent);
+  }
+  .transcript[open] summary::before {
+    content: '▾ ';
+  }
+  :global(.home-below) {
+    padding-top: 3rem;
+  }
+  @media (max-width: 700px) {
+    .hero-sections {
+      display: none;
+    }
+    .hero-hint {
+      bottom: 104px;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--bg) 70%, transparent);
+    }
+  }
+</style>

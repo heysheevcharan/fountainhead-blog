@@ -12,6 +12,8 @@ interface Props {
 }
 
 const { title, description, image, type, pubDate } = Astro.props;
+// the homepage passes a full-bleed 3D hero (which carries its own nav); every other page is unchanged
+const hasHero = Astro.slots.has('hero');
 ---
 
 <!doctype html>
@@ -39,12 +41,27 @@ const { title, description, image, type, pubDate } = Astro.props;
       pubDate={pubDate}
     />
   </head>
-  <body>
-    <div class="container">
-      <Nav />
-      <main>
-        <slot />
-      </main>
-    </div>
+  <body class={hasHero ? 'homepage' : undefined}>
+    {
+      hasHero ? (
+        <>
+          <slot name="hero" />
+          <div class="site-content">
+            <div class="container home-below">
+              <main>
+                <slot />
+              </main>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div class="container">
+          <Nav />
+          <main>
+            <slot />
+          </main>
+        </div>
+      )
+    }
   </body>
 </html>

@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Newsletter from '../../components/Newsletter.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
@@ -64,6 +65,9 @@ function truncate(text: string, maxChars = 120): string {
   {posts.length === 0 && (
     <p class="text-muted">No posts yet. Check back soon.</p>
   )}
+
+  <hr class="divider" />
+  <Newsletter />
 </Base>
 
 <style>
