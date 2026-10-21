@@ -2,6 +2,7 @@
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Newsletter from '../../components/Newsletter.astro';
 
 export const getStaticPaths = (async () => {
   const posts = await getCollection('blog', ({ data }) => !data.draft);
@@ -100,6 +101,9 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
       <Content />
     </div>
 
+    <hr class="divider post-newsletter-divider" />
+    <Newsletter />
+
     <footer class="post-footer">
       <div class="post-nav">
         {newerPost && (
@@ -144,8 +148,12 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
     padding: 0.15em 0.5em;
   }
 
+  .post-newsletter-divider {
+    margin: 4rem 0 2.5rem;
+  }
+
   .post-footer {
-    margin-top: 4rem;
+    margin-top: 3rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border);
   }

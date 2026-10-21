@@ -1,0 +1,35 @@
+---
+/**
+ * "Get new posts in your inbox." + the Substack subscribe box.
+ * Used on the homepage (under a "newsletter" heading) and at the end of every blog page.
+ */
+interface Props {
+  /** show the "newsletter" section heading (the homepage does; posts don't) */
+  heading?: boolean;
+  /** anchor id for the heading (the hero links to #newsletter) */
+  id?: string;
+}
+const { heading = false, id = 'newsletter' } = Astro.props;
+---
+
+<section class="newsletter" aria-label="newsletter">
+  {heading && <h2 id={id} style="margin-top: 0;">newsletter</h2>}
+  <p class="text-muted newsletter-lede" id={heading ? undefined : id}>Get new posts in your inbox.</p>
+  <div class="substack-wrapper">
+    <iframe
+      src="https://sheevcharan.substack.com/embed"
+      width="100%"
+      height="150"
+      frameborder="0"
+      scrolling="no"
+      loading="lazy"
+      title="subscribe to sheev's newsletter on substack"></iframe>
+  </div>
+</section>
+
+<style>
+  .newsletter-lede {
+    font-size: 0.875rem;
+    margin-bottom: 1.25rem;
+  }
+</style>

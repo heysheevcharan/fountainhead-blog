@@ -1,0 +1,736 @@
+---
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { POSTERS } from '../../lab/posters';
+/**
+ * <Hero3D scene="awe-house" /> — lazy, pausable WebGL hero.
+ * The canvas is decorative (aria-hidden); everything it links to also exists in the page.
+ */
+interface Props {
+  scene: string;
+  height?: string;
+  /** shift the model to the right to make room for intro copy */
+  offset?: number;
+  caption?: boolean;
+  class?: string;
+  /** 'home' centres the model under the page header */
+  layout?: 'home' | 'side';
+  /** what sheev says when you arrive: [{ title?, html }] */
+  intro?: { title?: string; html: string }[];
+  autoIntro?: 'auto' | 'always' | 'never';
+  /** latest posts, pinned to the board above his desk */
+  posts?: { title: string; href: string; date?: string }[];
+  /** show the scene's still frames while it loads (spec: src/lab/posters.ts) */
+  poster?: boolean;
+}
+const { scene, height = '100svh', offset, caption = true, class: className = '', layout = 'side', intro, autoIntro = 'auto', poster = true, posts } = Astro.props;
+
+// Stills per screen shape x time slot in bangalore (src/lab/posters.ts), rendered by
+// tools/posters/render-posters.cjs. URLs are content-hashed so a re-render is never served stale.
+const spec = poster ? POSTERS[scene] : undefined;
+const versioned = (url: string) => {
+  const file = join(process.cwd(), 'public', url);
+  if (!existsSync(file)) return null;
+  return `${url}?v=${createHash('sha1').update(readFileSync(file)).digest('hex').slice(0, 10)}`;
+};
+const urls: Record<string, string> = {};
+if (spec)
+  for (const size of spec.sizes)
+    for (const time of spec.times) {
+      const url = versioned(`${spec.base}-${size.id}-${time.id}.webp`);
+      if (url) urls[`${size.id}-${time.id}`] = url;
+    }
+// where the wall art and the desk land in each size's frame (written by the renderer alongside
+// the stills; describes the images as rendered, margins included)
+type StillLayout = { w: number; h: number; ox: number; oy: number; head: number[][]; foot: number[][] };
+let layouts: Record<string, StillLayout> = {};
+try {
+  const file = spec ? join(process.cwd(), 'public', `${spec.base}-posters.json`) : '';
+  if (file && existsSync(file)) layouts = JSON.parse(readFileSync(file, 'utf8')).sizes ?? {};
+} catch {}
+// (the spec is emitted even before any still exists: it also sets the copy's tone, and the renderer reads it)
+const posterData = spec
+  ? JSON.stringify({
+      sizes: spec.sizes.map((sz) => {
+        const lay = layouts[sz.id];
+        const fits = lay && lay.w === sz.w && lay.h === sz.h;
+        return { ...sz, maxAspect: Number.isFinite(sz.maxAspect) ? sz.maxAspect : 99, ...(fits ? { ox: lay.ox, oy: lay.oy, head: lay.head, foot: lay.foot } : {}) };
+      }),
+      times: spec.times,
+      urls,
+    })
+  : undefined;
+// without javascript the picker can't run: the midday desktop still, top-aligned (its margin
+// above the room keeps the wall art lower, under the page copy, on most screens)
+const fallbackPoster = urls['d-noon'] ?? Object.values(urls)[0];
+const noscriptPosterCss = fallbackPoster ? `.h3d{--poster:url(${fallbackPoster});--poster-pos:center top}.h3d::before{opacity:1}` : '';
+---
+
+<section
+  class={`h3d ${className}`}
+  data-scene={scene}
+  data-offset={offset}
+  data-caption={caption ? '1' : '0'}
+  data-layout={layout}
+  data-auto-intro={autoIntro}
+  data-intro={intro ? JSON.stringify(intro) : undefined}
+  data-posts={posts?.length ? JSON.stringify(posts) : undefined}
+  data-posters={posterData}
+  style={`--h3d-h:${height}`}
+  aria-label="an interactive 3d scene of sheev"
+>
+  <script is:inline>
+    // runs before the copy below is painted: the hour in bangalore picks the time slot (the same
+    // slots as the live scene's routine + light, src/lab/posters.ts), and the slot sets the copy's tone
+    (function () {
+      var el = document.currentScript && document.currentScript.parentElement;
+      if (!el) return;
+      var spec;
+      try {
+        spec = JSON.parse(el.getAttribute('data-posters') || 'null');
+      } catch (e) {}
+      if (!spec) return;
+      var h = parseFloat(new URLSearchParams(location.search).get('time'));
+      if (isNaN(h)) {
+        var d = new Date();
+        h = (d.getUTCHours() + d.getUTCMinutes() / 60 + d.getUTCSeconds() / 3600 + 5.5) % 24;
+      }
+      var t = spec.times[0];
+      for (var i = 0; i < spec.times.length; i++) {
+        var c = spec.times[i];
+        if (c.from <= c.to ? h >= c.from && h < c.to : h >= c.from || h < c.to) {
+          t = c;
+          break;
+        }
+      }
+      el.setAttribute('data-tone', t.tone);
+      el.setAttribute('data-poster-time', t.id);
+    })();
+  </script>
+  <div class="h3d-overlay"><slot /></div>
+  <script is:inline>
+    // the still for this screen shape, laid out around the copy that is now on the page: cover the
+    // screen, then (on screens smaller than the still's own) shrink it a step at a time and slide
+    // it down until the wall art clears the header and the desk stays above the bottom copy, the
+    // same rule the live camera frames by (index.ts: fitFor). The live room starts from exactly
+    // what this shows (posterCamera), so the swap is invisible.
+    (function () {
+      var el = document.currentScript && document.currentScript.parentElement;
+      if (!el) return;
+      var spec;
+      try {
+        spec = JSON.parse(el.getAttribute('data-posters') || 'null');
+      } catch (e) {}
+      var tid = el.getAttribute('data-poster-time');
+      if (!spec || !tid) return;
+      var a = innerWidth / Math.max(1, innerHeight);
+      var sz = spec.sizes[spec.sizes.length - 1];
+      for (var j = 0; j < spec.sizes.length; j++) {
+        if (a < spec.sizes[j].maxAspect) {
+          sz = spec.sizes[j];
+          break;
+        }
+      }
+      var u = spec.urls[sz.id + '-' + tid];
+      if (!u) return;
+      el.style.setProperty('--poster', 'url(' + u + ')');
+      el.setAttribute('data-poster', sz.id + '-' + tid);
+      function textBox(node) {
+        var r = document.createRange();
+        r.selectNodeContents(node);
+        var b = r.getBoundingClientRect();
+        return b.width ? b : null;
+      }
+      function lay() {
+        var hero = el.getBoundingClientRect();
+        var W = hero.width;
+        var H = hero.height;
+        var ox = sz.ox || 0;
+        var oy = sz.oy || 0;
+        var s = Math.max(W / sz.w, H / sz.h);
+        var x = (W - sz.w * s) / 2;
+        var y = (H - sz.h * s) / 2;
+        var headEl = el.querySelector('[data-hero-head]');
+        var footEl = el.querySelector('[data-hero-foot]');
+        var ht = headEl && textBox(headEl);
+        var ft = footEl && textBox(footEl);
+        if (sz.head && ht) {
+          var hb = headEl.getBoundingClientRect();
+          var head = { l: hb.left - hero.left - 12, r: ht.right - hero.left + 12, b: ht.bottom - hero.top + 30 };
+          var fb = footEl && footEl.getBoundingClientRect();
+          var foot = ft ? { l: fb.left - hero.left - 12, r: ft.right - hero.left + 12, t: ft.top - hero.top - 8 } : null;
+          // smallest it can get while its margins still cover the screen
+          var sMin = Math.max(W / (sz.w * (1 + 2 * ox)), H / (sz.h * (1 + 2 * oy)));
+          for (var k = 0; ; k++) {
+            var need = 0;
+            var room = Infinity;
+            for (var p = 0; p < sz.head.length; p++) {
+              var hx = x + sz.head[p][0] * s;
+              if (hx > head.l && hx < head.r) need = Math.max(need, head.b - (y + sz.head[p][1] * s));
+            }
+            if (foot)
+              for (var q = 0; q < sz.foot.length; q++) {
+                var fx = x + sz.foot[q][0] * s;
+                if (fx > foot.l && fx < foot.r) room = Math.min(room, foot.t - (y + sz.foot[q][1] * s));
+              }
+            // how far it can slide down before its top edge shows
+            var down = Math.max(0, oy * sz.h * s - y);
+            if (need <= 0) break;
+            if (need <= room && need <= down) {
+              y += need;
+              break;
+            }
+            if (k >= 11 || s / 1.03 < sMin) {
+              y += Math.min(need, down);
+              break;
+            }
+            s /= 1.03;
+            x = (W - sz.w * s) / 2;
+            y = (H - sz.h * s) / 2;
+          }
+        }
+        el.style.setProperty('--poster-size', (sz.w * (1 + 2 * ox) * s).toFixed(1) + 'px ' + (sz.h * (1 + 2 * oy) * s).toFixed(1) + 'px');
+        el.style.setProperty('--poster-pos', (x - ox * sz.w * s).toFixed(1) + 'px ' + (y - oy * sz.h * s).toFixed(1) + 'px');
+        // for the live scene's hand-off: scale + where the still's own frame starts
+        el.setAttribute('data-poster-fit', s.toFixed(5) + ',' + x.toFixed(2) + ',' + y.toFixed(2));
+      }
+      lay();
+      // until the live scene takes over (or for good, without webgl) keep it fitted
+      var raf = 0;
+      addEventListener('resize', function () {
+        if (el.classList.contains('is-ready')) return;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(lay);
+      });
+      // fetch it now (not when the stylesheet gets to it); fade in once it's here, instantly if cached
+      var im = new Image();
+      im.onload = function () {
+        el.classList.add('poster-in');
+      };
+      im.src = u;
+      if (im.complete) el.classList.add('poster-in', 'poster-cached');
+    })();
+  </script>
+  <!-- no visible controls; a keyboard / screen-reader user can still stop the animation -->
+  <button class="h3d-pause" type="button" aria-pressed="false">pause animation</button>
+  <noscript>{noscriptPosterCss && <style is:inline set:html={noscriptPosterCss} />}</noscript>
+</section>
+
+<script>
+  import { byId, type SceneHandle } from '../../lab/registry';
+
+  function webglOk() {
+    try {
+      const c = document.createElement('canvas');
+      return !!(c.getContext('webgl2') || c.getContext('webgl'));
+    } catch {
+      return false;
+    }
+  }
+
+  async function boot(el: HTMLElement) {
+    if (el.dataset.booted) return;
+    el.dataset.booted = '1';
+    const dir = byId(el.dataset.scene || '');
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    if (!dir || !webglOk() || saveData) {
+      el.classList.add('h3d-nogl');
+      // no live scene: the poster stays, and the words he'd have said are shown as text
+      document.querySelector<HTMLDetailsElement>('details.transcript')?.setAttribute('open', '');
+      return;
+    }
+    el.classList.add('is-loading');
+    // start the big downloads now, alongside the scene's code, instead of one after the other
+    const preloaded: Record<string, Promise<ArrayBuffer>> = {};
+    for (const url of dir.preload ?? []) {
+      preloaded[url] = fetch(url).then((r) => {
+        if (!r.ok) throw new Error(`${r.status} ${url}`);
+        return r.arrayBuffer();
+      });
+      preloaded[url].catch(() => {});
+    }
+    const mod = await dir.load();
+    let intro: unknown;
+    let posts: unknown;
+    try {
+      intro = el.dataset.intro ? JSON.parse(el.dataset.intro) : undefined;
+      posts = el.dataset.posts ? JSON.parse(el.dataset.posts) : undefined;
+    } catch {}
+    const handle: SceneHandle = mod.mount(el, {
+      offset: el.dataset.offset ? Number(el.dataset.offset) : undefined,
+      caption: el.dataset.caption !== '0',
+      layout: el.dataset.layout,
+      intro,
+      autoIntro: el.dataset.autoIntro,
+      preloaded,
+      posts,
+    });
+    (el as HTMLElement & { __h3d?: SceneHandle }).__h3d = handle;
+    // keep the poster up until the first complete frame is drawn, then fade the live scene in over it
+    await Promise.race([handle.ready ?? Promise.resolve(), new Promise((r) => setTimeout(r, 12000))]);
+    el.classList.remove('is-loading');
+    el.classList.add('is-ready');
+    const btn = el.querySelector<HTMLButtonElement>('.h3d-pause');
+    btn?.addEventListener('click', () => {
+      const running = handle.stage?.toggle();
+      btn.textContent = running ? 'pause animation' : 'play animation';
+      btn.setAttribute('aria-pressed', running ? 'false' : 'true');
+    });
+    const hx = handle as SceneHandle & { highlight?: (k: string, on: boolean) => void };
+    // nav links light up the object they lead to
+    if (hx.highlight) {
+      document.querySelectorAll<HTMLAnchorElement>('[data-nav]').forEach((a) => {
+        const key = a.dataset.nav!;
+        a.addEventListener('pointerenter', () => hx.highlight!(key, true));
+        a.addEventListener('pointerleave', () => hx.highlight!(key, false));
+        a.addEventListener('focus', () => hx.highlight!(key, true));
+        a.addEventListener('blur', () => hx.highlight!(key, false));
+      });
+    }
+    el.dispatchEvent(new CustomEvent('h3d:ready', { detail: handle, bubbles: true }));
+  }
+
+  // lazy: boot when (nearly) on screen and the main thread is idle
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        const run = () => boot(e.target as HTMLElement);
+        if ('requestIdleCallback' in window) (window as any).requestIdleCallback(run, { timeout: 600 });
+        else setTimeout(run, 50);
+      }
+    },
+    { rootMargin: '200px' },
+  );
+  document.querySelectorAll<HTMLElement>('.h3d').forEach((el) => io.observe(el));
+</script>
+
+<style is:global>
+  :root {
+    --page-bg: var(--bg);
+  }
+  /* the overlay follows the scene's light, not the OS theme */
+  .h3d[data-tone='light'] {
+    --bg: #faf8f5;
+    --text: #1a1a1a;
+    /* a shade darker than the site's #666055: the wall behind is darker than paper */
+    --text-muted: #4f4940;
+    --border: #d8d4ce;
+    --link: #1a1a1a;
+  }
+  .h3d[data-tone='dark'] {
+    --bg: #1b1815;
+    --text: #f6f2ec;
+    --text-muted: #dcd4c8;
+    --border: #4a443c;
+    --link: #f3efe9;
+  }
+  .h3d .h3d-overlay {
+    color: var(--text);
+    transition: color 0.6s ease;
+  }
+  .h3d::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 56px;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent, var(--page-bg));
+    transition: opacity 0.8s ease;
+  }
+  /* only fade into the page when the room and the page share a tone
+     (a night room shouldn't wash into a light page, nor a sunny room into a dark one) */
+  .h3d[data-tone='dark']::after {
+    opacity: 0;
+  }
+  @media (prefers-color-scheme: dark) {
+    .h3d[data-tone='light']::after {
+      opacity: 0;
+    }
+    .h3d[data-tone='dark']::after {
+      opacity: 1;
+    }
+  }
+  [data-hero-status] .s3d-caption {
+    position: static;
+    transform: none;
+    white-space: normal;
+    width: auto;
+    text-align: left;
+    justify-content: flex-start;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    transition: opacity 0.3s ease;
+  }
+  .h3d {
+    position: relative;
+    width: 100%;
+    height: var(--h3d-h, 100svh);
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--bg);
+  }
+  .h3d::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* laid out around the page copy by the inline script (plain cover without it) */
+    background: var(--poster, none) var(--poster-pos, center) / var(--poster-size, cover) no-repeat;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .h3d.poster-in::before {
+    opacity: 1;
+  }
+  .h3d.poster-cached::before {
+    transition: none;
+  }
+  /* the poster stays fully opaque underneath while the live canvas fades in on top
+     (fading both at once would dip through the page colour mid-way) */
+  .h3d.is-ready::before {
+    opacity: 0;
+    transition: opacity 0s linear 0.8s;
+  }
+  .h3d > canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    touch-action: pan-y;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.7s ease;
+  }
+  .h3d.is-ready > canvas {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .h3d-overlay {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    inset: 0;
+  }
+  .h3d-overlay > * {
+    pointer-events: auto;
+  }
+  /* the floor fades out under the bottom copy (status, section links, drag hint), so it reads
+     over rugs, chair legs and pools of lamp light without a halo on the letters. One layer per
+     tone, cross-faded, since a gradient's colour can't transition. */
+  .h3d-overlay::before,
+  .h3d-overlay::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(clamp(18px, 4vh, 36px) + 120px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+  }
+  .h3d-overlay::before {
+    background: linear-gradient(to top, rgb(250 248 245 / 0.6), rgb(250 248 245 / 0.42) 38%, rgb(250 248 245 / 0));
+  }
+  .h3d-overlay::after {
+    background: linear-gradient(to top, rgb(27 24 21 / 0.86), rgb(27 24 21 / 0.62) 38%, rgb(27 24 21 / 0));
+  }
+  .h3d[data-tone='light'] .h3d-overlay::before,
+  .h3d[data-tone='dark'] .h3d-overlay::after {
+    opacity: 1;
+  }
+  /* keyboard-only: invisible until tabbed to, then a small pill bottom-right */
+  .h3d-pause {
+    position: absolute;
+    right: 1.5rem;
+    bottom: clamp(18px, 4vh, 36px);
+    z-index: 3;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+    font: inherit;
+    font-size: 0.75rem;
+    color: var(--text);
+    background: var(--bg);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .h3d-pause:focus-visible {
+    width: auto;
+    height: auto;
+    padding: 0.3rem 0.7rem;
+    clip-path: none;
+    border: 1px solid var(--border);
+  }
+  .h3d-nogl .h3d-pause,
+  .h3d:not(.is-ready) .h3d-pause {
+    display: none;
+  }
+  .s3d-bubble {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 4;
+    max-width: 260px;
+    padding: 0.55rem 0.75rem;
+    background: color-mix(in srgb, var(--bg) 94%, white);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    font-size: 0.82rem;
+    line-height: 1.4;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    will-change: transform;
+  }
+  .s3d-bubble.is-on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .s3d-bubble-link {
+    display: inline-block;
+    margin-left: 0.4rem;
+    color: var(--text-muted);
+    font-size: 0.75rem;
+  }
+  .s3d-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 4;
+    padding: 0.3rem 0.55rem;
+    background: var(--text);
+    color: var(--bg);
+    border-radius: 6px;
+    font-size: 0.74rem;
+    line-height: 1.3;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+  }
+  .s3d-label.is-on {
+    opacity: 1;
+  }
+  .s3d-label-sub {
+    opacity: 0.7;
+    font-size: 0.7rem;
+  }
+  .s3d-zzz {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .s3d-zzz span {
+    position: absolute;
+    color: var(--text-muted);
+    animation: s3d-z 2.6s ease-out forwards;
+  }
+  @keyframes s3d-z {
+    from {
+      opacity: 0;
+      transform: translate(0, 0);
+    }
+    20% {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+      transform: translate(var(--drift, 16px), -46px);
+    }
+  }
+  .s3d-caption {
+    position: absolute;
+    left: 50%;
+    bottom: 1.1rem;
+    transform: translateX(-50%);
+    z-index: 3;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+  .s3d-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: inline-block;
+    animation: s3d-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes s3d-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+  .s3d-speech {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 5;
+    width: min(340px, calc(100% - 24px));
+    padding: 0.8rem 0.95rem 0.6rem;
+    background: color-mix(in srgb, var(--bg) 96%, white);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.1);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    will-change: transform;
+  }
+  .s3d-speech::after {
+    content: '';
+    position: absolute;
+    left: var(--tail-x, 40px);
+    bottom: -7px;
+    width: 12px;
+    height: 12px;
+    background: inherit;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .s3d-speech.is-on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .s3d-speech.is-docked::after {
+    bottom: auto;
+    top: -7px;
+    transform: translateX(-50%) rotate(225deg);
+  }
+  /* beside his face: the tail points sideways at his mouth */
+  .s3d-speech.is-right::after,
+  .s3d-speech.is-left::after {
+    bottom: auto;
+    top: var(--tail-y, 40px);
+  }
+  .s3d-speech.is-right::after {
+    left: 0;
+    transform: translate(-50%, -50%) rotate(135deg);
+  }
+  .s3d-speech.is-left::after {
+    left: 100%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+  .s3d-speech-title {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  .s3d-speech-text a {
+    text-decoration-color: var(--accent);
+  }
+  .s3d-speech-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 0.55rem;
+  }
+  .s3d-speech-dots {
+    display: flex;
+    gap: 5px;
+    margin-right: auto;
+  }
+  .s3d-speech-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .s3d-speech-dots span.on {
+    background: var(--accent);
+  }
+  .s3d-speech button {
+    font: inherit;
+    font-size: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    padding: 0.1rem 0;
+  }
+  .s3d-speech .s3d-speech-next {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 3px;
+  }
+  .s3d-tag {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.18rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg) 92%, white);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 0.74rem;
+    text-decoration: none;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .s3d-tag.is-on {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .s3d-tag.is-off {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .s3d-tag:hover {
+    border-color: var(--accent);
+  }
+  .s3d-placeholder,
+  .h3d-fallback {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .s3d-dot {
+      animation: none;
+    }
+  }
+  @media (max-width: 700px) {
+    .s3d-caption {
+      white-space: normal;
+      width: calc(100% - 2rem);
+      text-align: center;
+      justify-content: center;
+      bottom: 3rem;
+    }
+  }
+</style>

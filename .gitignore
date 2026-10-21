@@ -23,3 +23,7 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 .vercel
+
+# blender intermediates (tools/character: the optimized model lives in public/3d)
+tools/character/out/
+tools/character/previews/
