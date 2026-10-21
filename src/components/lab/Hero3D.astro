@@ -43,7 +43,7 @@ if (spec)
     }
 // where the wall art and the desk land in each size's frame (written by the renderer alongside
 // the stills; describes the images as rendered, margins included)
-type StillLayout = { w: number; h: number; ox: number; oy: number; head: number[][]; foot: number[][] };
+type StillLayout = { w: number; h: number; ox: number; oy: number; head: number[][]; foot: number[][]; slots?: Record<string, { head: number[][]; foot: number[][] }> };
 let layouts: Record<string, StillLayout> = {};
 try {
   const file = spec ? join(process.cwd(), 'public', `${spec.base}-posters.json`) : '';
@@ -55,7 +55,7 @@ const posterData = spec
       sizes: spec.sizes.map((sz) => {
         const lay = layouts[sz.id];
         const fits = lay && lay.w === sz.w && lay.h === sz.h;
-        return { ...sz, maxAspect: Number.isFinite(sz.maxAspect) ? sz.maxAspect : 99, ...(fits ? { ox: lay.ox, oy: lay.oy, head: lay.head, foot: lay.foot } : {}) };
+        return { ...sz, maxAspect: Number.isFinite(sz.maxAspect) ? sz.maxAspect : 99, ...(fits ? { ox: lay.ox, oy: lay.oy, head: lay.head, foot: lay.foot, slots: lay.slots } : {}) };
       }),
       times: spec.times,
       urls,
@@ -134,6 +134,8 @@ const noscriptPosterCss = fallbackPoster ? `.h3d{--poster:url(${fallbackPoster})
       }
       var u = spec.urls[sz.id + '-' + tid];
       if (!u) return;
+      // where the wall art + desk land in this slot's still (on phones the camera follows him)
+      var marks = (sz.slots && sz.slots[tid]) || sz;
       el.style.setProperty('--poster', 'url(' + u + ')');
       el.setAttribute('data-poster', sz.id + '-' + tid);
       function textBox(node) {
@@ -155,7 +157,7 @@ const noscriptPosterCss = fallbackPoster ? `.h3d{--poster:url(${fallbackPoster})
         var footEl = el.querySelector('[data-hero-foot]');
         var ht = headEl && textBox(headEl);
         var ft = footEl && textBox(footEl);
-        if (sz.head && ht) {
+        if (marks.head && ht) {
           var hb = headEl.getBoundingClientRect();
           var head = { l: hb.left - hero.left - 12, r: ht.right - hero.left + 12, b: ht.bottom - hero.top + 30 };
           var fb = footEl && footEl.getBoundingClientRect();
@@ -165,14 +167,14 @@ const noscriptPosterCss = fallbackPoster ? `.h3d{--poster:url(${fallbackPoster})
           for (var k = 0; ; k++) {
             var need = 0;
             var room = Infinity;
-            for (var p = 0; p < sz.head.length; p++) {
-              var hx = x + sz.head[p][0] * s;
-              if (hx > head.l && hx < head.r) need = Math.max(need, head.b - (y + sz.head[p][1] * s));
+            for (var p = 0; p < marks.head.length; p++) {
+              var hx = x + marks.head[p][0] * s;
+              if (hx > head.l && hx < head.r) need = Math.max(need, head.b - (y + marks.head[p][1] * s));
             }
             if (foot)
-              for (var q = 0; q < sz.foot.length; q++) {
-                var fx = x + sz.foot[q][0] * s;
-                if (fx > foot.l && fx < foot.r) room = Math.min(room, foot.t - (y + sz.foot[q][1] * s));
+              for (var q = 0; q < marks.foot.length; q++) {
+                var fx = x + marks.foot[q][0] * s;
+                if (fx > foot.l && fx < foot.r) room = Math.min(room, foot.t - (y + marks.foot[q][1] * s));
               }
             // how far it can slide down before its top edge shows
             var down = Math.max(0, oy * sz.h * s - y);

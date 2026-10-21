@@ -36,15 +36,18 @@ const SCENE_BASE = 'awe-house';
     for (const slot of spec.times) {
       const page = await ctx.newPage();
       // no rain on the stills (the live room lets it start after the hand-off)
-      await page.goto(`${BASE}/?time=${slot.render}&intro=0&rain=0`, { waitUntil: 'networkidle' });
+      // (full quality: phones get a lighter live room, never lighter stills)
+      await page.goto(`${BASE}/?time=${slot.render}&intro=0&rain=0&quality=high`, { waitUntil: 'networkidle' });
       await page.waitForSelector('.h3d.is-ready', { timeout: 30000 });
       await page.waitForTimeout(400);
       const still = await page.evaluate(({ ox, oy }) => document.querySelector('.h3d').__h3d.still(ox, oy), { ox: size.ox, oy: size.oy });
       const file = path.join(OUT, `${SCENE_BASE}-${size.id}-${slot.id}.webp`);
       fs.writeFileSync(file, Buffer.from(still.url.split(',')[1], 'base64'));
       console.log(path.basename(file), Math.round(fs.statSync(file).size / 1024) + ' KB');
-      // the furniture doesn't move between slots: one layout per size
-      layout[size.id] = { w: size.w, h: size.h, ox: size.ox, oy: size.oy, head: still.head, foot: still.foot };
+      // the furniture doesn't move between slots, but on portrait screens the camera follows him
+      // (the armchair in the evening, the desk otherwise): one layout per size, and per slot
+      const lay = (layout[size.id] ??= { w: size.w, h: size.h, ox: size.ox, oy: size.oy, head: still.head, foot: still.foot, slots: {} });
+      lay.slots[slot.id] = { head: still.head, foot: still.foot };
       await page.close();
     }
     await ctx.close();

@@ -54,10 +54,24 @@ const INTRO_SEEN_KEY = 'sheev:intro-seen';
 const DRAGGED_KEY = 'sheev:dragged';
 
 export function mount(container: HTMLElement, opts: MountOptions = {}) {
-  const stage = new Stage({ container, shadows: true, fov: 30, exposure: 1 });
+  const params = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
+  /*
+   * Phones + tablets get a lighter room: 30fps, fewer pixels, shadows redrawn every other frame.
+   * ?quality=low | high forces either (tools/posters/render-posters.cjs renders the stills at high).
+   */
+  const quality = params.get('quality');
+  const lite = quality === 'low' || (quality !== 'high' && matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) < 900);
+  const stage = new Stage({
+    container,
+    shadows: true,
+    fov: 30,
+    exposure: 1,
+    ...(lite ? { maxDpr: 1.5, maxFps: 30, shadowEvery: 2 } : {}),
+    // the stills are rendered at full resolution however slow the machine rendering them is
+    adaptive: quality !== 'high',
+  });
   const { scene, renderer } = stage;
   const M = standardMats();
-  const params = typeof location !== 'undefined' ? new URLSearchParams(location.search) : new URLSearchParams();
   const small = Math.min(window.innerWidth, window.innerHeight) < 700;
   /** true once the loop runs (the room is about to be on screen) */
   let live = false;
@@ -285,7 +299,26 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
     lean: 0,
     leanGoal: 0,
     talkW: 0,
+    /** portrait: the x the camera is centred on (it follows him), and where it's gliding to */
+    followX: 0,
+    followGoal: 0,
   };
+  /*
+   * Portrait screens see ~2m of a 7m room: instead of a fixed shot of the desk the camera follows
+   * him (desk, armchair, window, shelf), like an operator: it holds still while he stays near the
+   * middle of the frame and glides once he wanders off it. Landscape keeps the whole room in shot.
+   */
+  const FOLLOW_MIN = -2.0; // the film corner
+  const FOLLOW_MAX = 3.0; // the lilies + the bookshelf
+  const FOLLOW_SLACK = 0.45; // how far he can move before the camera does (m)
+  const FOLLOW_BIAS = 0.13; // at the desk, the shot it always had (centred at -0.12)
+  const followTarget = () => clamp((director.seated === 'lounge' ? F.armchair.position.x : sheev.root.position.x) + FOLLOW_BIAS, FOLLOW_MIN, FOLLOW_MAX);
+  view.followX = view.followGoal = followTarget();
+  let followPrev = view.followX;
+  let followVel = 0;
+  let wasWalking = false;
+  /** after a swipe the camera stays where the visitor left it for a while, then goes back to him */
+  let lastDrag = -1e9;
   const closeCam = params.get('cam') === 'close';
   const tmpA = new THREE.Vector3();
   const tmpB = new THREE.Vector3();
@@ -355,7 +388,8 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
     const foot = { l: col - 12, r: col + copy.footW + 12, t: footBottom - copy.footT - 8 };
     return { head, foot };
   }
-  function fitFor(W: number, H: number): Fit {
+  /** (portrait: for the camera following him to `followX`; each spot in the room has its own fit) */
+  function fitFor(W: number, H: number, followX = view.followX): Fit {
     if (!copy.headB) return { zoom: 1, shift: 0 };
     const { head, foot } = copyRects(W, H);
     fitProbe.fov = cam.fov;
@@ -365,7 +399,7 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
     let zoom = 1;
     let need = 0;
     for (let i = 0; i < 12; i++, zoom *= 1.03) {
-      placeCamera(fitProbe, 0, 0, view.focusPoint, 0, false, W, H, { zoom, shift: 0 });
+      placeCamera(fitProbe, 0, 0, view.focusPoint, 0, false, W, H, { zoom, shift: 0 }, followX);
       fitProbe.updateMatrixWorld();
       const at = (x: number, y: number, z: number) => {
         const v = tmpB.set(x, y, z).project(fitProbe);
@@ -389,12 +423,12 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
   }
   let fit: Fit = { zoom: 1, shift: 0 };
 
-  function placeCamera(c: THREE.PerspectiveCamera, focusW: number, lean: number, focusPoint: THREE.Vector3, talkW: number, live: boolean, W = stage.width, H = stage.height, f: Fit = fit) {
+  function placeCamera(c: THREE.PerspectiveCamera, focusW: number, lean: number, focusPoint: THREE.Vector3, talkW: number, live: boolean, W = stage.width, H = stage.height, f: Fit = fit, followX = view.followX) {
     const aspect = W / H;
     // what has to fit across the screen (metres, at the back wall)
     const portrait = aspect < 0.85;
     const span = portrait ? 3.4 : aspect < 1.25 ? 5.8 : clamp(6.2 + (aspect - 1.25) * 3.6, 7.0, 9.0);
-    const cx = portrait ? -0.12 : aspect < 1.25 ? 0.1 : 0.42;
+    const cx = portrait ? followX : aspect < 1.25 ? 0.1 : 0.42;
     const vfov = THREE.MathUtils.degToRad(c.fov);
     const hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
     const pitch = THREE.MathUtils.degToRad(portrait ? 12 : 11);
@@ -510,10 +544,12 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
     cam.setViewOffset(W, H, -ox * W, -oy * H - shiftFor(W, H, fit), W * (1 + 2 * ox), H * (1 + 2 * oy));
     const before = renderer.getSize(new THREE.Vector2());
     renderer.setSize(Math.round(W * (1 + 2 * ox)), Math.round(H * (1 + 2 * oy)), false);
+    renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, cam);
     const url = renderer.domElement.toDataURL('image/webp', 0.8);
     renderer.setSize(before.x, before.y, false);
     placeCamera(cam, 0, 0, view.focusPoint, 0, false, W, H, fit);
+    renderer.shadowMap.needsUpdate = true;
     renderer.render(scene, cam);
     return { url, head, foot };
   }
@@ -545,6 +581,27 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
     if (view.focusGoal) view.focusPoint.lerp(view.focusGoal, 1 - Math.exp(-dt * 4));
     view.lean = damp(view.lean, view.leanGoal, 4, dt);
     view.talkW = damp(view.talkW, director.introActive ? 1 : 0, 1.6, dt);
+    if (stage.width / stage.height < 0.85) {
+      // follow him (not while the visitor is looking around: then back to him, swing first)
+      const looking = dragging || performance.now() - lastDrag < 4000;
+      const tx = followTarget();
+      if (dt > 0) followVel = damp(followVel, (tx - followPrev) / dt, 4, dt);
+      followPrev = tx;
+      const walking = director.mode === 'walking';
+      if (!looking) {
+        view.yaw = damp(view.yaw, 0, 1.2, dt);
+        // once he's off the middle of the frame, re-centre on him; while he walks, stay a little
+        // ahead of him (where he's going), not behind
+        if (walking) view.followGoal = clamp(tx + clamp(followVel * 0.8, -0.5, 0.5), FOLLOW_MIN, FOLLOW_MAX);
+        else if (wasWalking || Math.abs(tx - view.followGoal) > FOLLOW_SLACK) view.followGoal = tx; // arrived: settle on him
+      }
+      wasWalking = walking;
+      view.followX = damp(view.followX, view.followGoal, walking ? 2.2 : 1.4, dt);
+      // the copy clearance for where the camera is now (eased: a picture on the wall coming into
+      // shot under the name lowers the room gently, not in one frame)
+      const goal = fitFor(stage.width, stage.height);
+      fit = dt > 0 ? { zoom: damp(fit.zoom, goal.zoom, 3, dt), shift: damp(fit.shift, goal.shift, 3, dt) } : goal;
+    }
     placeCamera(cam, view.focusW, view.lean, view.focusPoint, view.talkW, true);
     applyHandoff(dt);
     if (closeCam) {
@@ -837,6 +894,7 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
     if (dragMoved > 6) stage.canvas.style.cursor = 'grabbing';
   };
   const onUp = () => {
+    if (dragging && dragMoved > 6) lastDrag = performance.now();
     dragging = false;
     if (stage.canvas.style.cursor === 'grabbing') stage.canvas.style.cursor = '';
   };
@@ -880,9 +938,9 @@ export function mount(container: HTMLElement, opts: MountOptions = {}) {
       timeAccum = 0;
       updateCaption();
     }
-    // dappled light: the rain tree outside sways (redrawn ~12×/s)
+    // dappled light: the rain tree outside sways (redrawn ~12×/s, ~5×/s on phones: each redraw is a texture upload)
     cookieT += dt;
-    if (cookieT > 0.08 && !stage.reducedMotion) {
+    if (cookieT > (lite ? 0.2 : 0.08) && !stage.reducedMotion) {
       cookieT = 0;
       cookie.draw(t);
     }

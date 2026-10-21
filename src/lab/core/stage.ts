@@ -11,6 +11,12 @@ export interface StageOptions {
   fov?: number;
   toneMapping?: THREE.ToneMapping;
   exposure?: number;
+  /** draw at most this many frames a second (0: every display frame) */
+  maxFps?: number;
+  /** redraw the shadow maps every n-th frame (1: every frame) */
+  shadowEvery?: number;
+  /** step the pixel ratio down (to 1) while frames take too long */
+  adaptive?: boolean;
 }
 
 type FrameFn = (dt: number, t: number) => void;
@@ -51,6 +57,14 @@ export class Stage {
   private everStarted = false;
   private disposers: (() => void)[] = [];
   private raycaster = new THREE.Raycaster();
+  private minFrameMs: number;
+  private shadowEvery: number;
+  private frameNo = 0;
+  /** adaptive quality: smoothed time between drawn frames, and how long it has been over budget */
+  private adaptive: boolean;
+  private frameMsAvg = 0;
+  private slowFor = 0;
+  private sinceStart = 0;
 
   constructor(opts: StageOptions) {
     this.container = opts.container;
@@ -71,9 +85,14 @@ export class Stage {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.renderer.toneMapping = opts.toneMapping ?? THREE.AgXToneMapping;
     this.renderer.toneMappingExposure = opts.exposure ?? 1;
+    this.minFrameMs = opts.maxFps ? 1000 / opts.maxFps : 0;
+    this.shadowEvery = Math.max(1, opts.shadowEvery ?? 1);
+    this.adaptive = opts.adaptive ?? false;
     if (opts.shadows) {
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFShadowMap;
+      // with a cadence, draw() says when they're due (and every one-off render redraws them)
+      this.renderer.shadowMap.autoUpdate = this.shadowEvery === 1;
     }
 
     this.camera = new THREE.PerspectiveCamera(opts.fov ?? 30, 1, 0.1, 200);
@@ -182,20 +201,44 @@ export class Stage {
 
   private tick() {
     const now = performance.now();
-    const dt = Math.min((now - this.lastTick) / 1000, 1 / 20);
+    const ms = now - this.lastTick;
+    // frame cap: skip display frames until the next one is due (2ms slack for vsync jitter)
+    if (this.minFrameMs && ms < this.minFrameMs - 2) return;
+    const dt = Math.min(ms / 1000, 1 / 20);
     this.lastTick = now;
     this.elapsed += dt;
+    if (this.adaptive) this.govern(ms, dt);
     this.frameFns.forEach((fn) => fn(dt, this.elapsed));
     this.draw();
   }
 
-  private draw() {
+  /**
+   * Adaptive quality: when frames keep taking well over budget, render fewer pixels. Steps the
+   * pixel ratio down 0.25 at a time to 1 and never back up (no see-sawing). The first seconds
+   * (shader compiles, the poster hand-off) and gaps after a pause don't count.
+   */
+  private govern(ms: number, dt: number) {
+    this.sinceStart += dt;
+    if (this.sinceStart < 3 || ms > 250) return;
+    this.frameMsAvg = this.frameMsAvg ? this.frameMsAvg + (ms - this.frameMsAvg) * 0.1 : ms;
+    const budget = this.minFrameMs || 1000 / 60;
+    this.slowFor = this.frameMsAvg > budget * 1.4 ? this.slowFor + dt : 0;
+    if (this.slowFor < 1.5 || this.dpr <= 1) return;
+    this.maxDpr = Math.max(1, this.dpr - 0.25);
+    this.slowFor = 0;
+    this.frameMsAvg = 0;
+    this.resize();
+  }
+
+  private draw(shadows = false) {
+    if (this.shadowEvery > 1) this.renderer.shadowMap.needsUpdate = shadows || this.frameNo % this.shadowEvery === 0;
+    this.frameNo++;
     if (this.renderFn) this.renderFn();
     else this.renderer.render(this.scene, this.camera);
   }
 
   renderOnce() {
-    this.draw();
+    this.draw(true);
   }
 
   /** Advance a fixed amount of time (used for posters / reduced motion). */
@@ -205,7 +248,7 @@ export class Stage {
       this.elapsed += dt;
       this.frameFns.forEach((fn) => fn(dt, this.elapsed));
     }
-    this.draw();
+    this.draw(true);
   }
 
   /** Raycast from the current pointer against objects. */
