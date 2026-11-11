@@ -1,43 +1,30 @@
 ---
 import Base from '../layouts/Base.astro';
 
-// Goodreads retired shelf RSS feeds (review/list_rss) in late Oct 2026; they now 404.
-// The public shelf widget still works. It returns up to 100 books, newest read first,
-// but no read dates, so the list is no longer grouped by year.
-const WIDGET_URL = 'https://www.goodreads.com/review/custom_widget/74097056?shelf=read&sort=date_read&order=d&num_books=100&widget_id=1';
+import { fetchReadShelf } from '../lib/goodreads.js';
+import bookYears from '../data/book-years.json';
 
-type Book = { title: string; author: string; link: string };
+type Book = { id: string; title: string; author: string; link: string };
+
+// Years come from src/data/book-years.json, kept up to date nightly by
+// scripts/sync-book-years.mjs. A book not synced yet counts as this year.
+const years: Record<string, number> = bookYears;
+const thisYear = new Date().getUTCFullYear();
+
 let books: Book[] = [];
-
-// The widget is a JS file that assigns an escaped HTML string; unescape it as text.
-const unescapeJs = (s: string) =>
-  s.replace(/\\n/g, '\n').replace(/\\(["'\/\\])/g, '$1');
-
-const decodeEntities = (s: string) =>
-  s.replace(/&amp;/g, '&')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;|&#x27;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .trim();
-
 try {
-  const res = await fetch(WIDGET_URL);
-  if (!res.ok) throw new Error(`Goodreads widget returned ${res.status}`);
-  const html = unescapeJs(await res.text());
-
-  const entries = html.split('class="gr_custom_each_container_1"').slice(1);
-
-  books = entries.flatMap((entry) => {
-    const titleMatch = entry.match(/class="gr_custom_title_1">\s*<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/);
-    if (!titleMatch) return [];
-    const author = entry.match(/class="gr_custom_author_1">[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/)?.[1] ?? '';
-    const link = decodeEntities(titleMatch[1]).replace(/\?utm_medium=.*$/, '');
-    return [{ title: decodeEntities(titleMatch[2]), author: decodeEntities(author), link }];
-  });
+  books = await fetchReadShelf();
 } catch (e) {
   console.warn('[books] Could not load Goodreads shelf:', e);
 }
+
+// Group by year, keeping Goodreads' newest-first order within each year.
+const grouped = new Map<number, Book[]>();
+for (const book of books) {
+  const year = years[book.id] ?? thisYear;
+  grouped.set(year, [...(grouped.get(year) ?? []), book]);
+}
+const yearList = [...grouped.keys()].sort((a, b) => b - a);
 ---
 
 <Base
@@ -49,18 +36,25 @@ try {
     {books.length} books read · via <a href="https://www.goodreads.com" target="_blank" rel="noopener noreferrer">Goodreads</a>
   </p>
 
-  <ul style="list-style: none; padding: 0;">
-    {books.map((book) => (
-      <li style="margin-bottom: 0.75rem;">
-        <a href={book.link} target="_blank" rel="noopener noreferrer">
-          {book.title}
-        </a>
-        {book.author && (
-          <span class="text-muted"> — {book.author}</span>
-        )}
-      </li>
-    ))}
-  </ul>
+  {yearList.map((year) => (
+    <section style="margin-bottom: 2.5rem;">
+      <h2 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; margin-top: 0;">
+        {year}
+      </h2>
+      <ul style="list-style: none; padding: 0;">
+        {grouped.get(year)!.map((book) => (
+          <li style="margin-bottom: 0.75rem;">
+            <a href={book.link} target="_blank" rel="noopener noreferrer">
+              {book.title}
+            </a>
+            {book.author && (
+              <span class="text-muted"> — {book.author}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
 
   {books.length === 0 && (
     <p class="text-muted">Could not load books. Check back soon.</p>

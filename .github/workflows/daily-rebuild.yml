@@ -6,12 +6,32 @@ on:
   workflow_dispatch: # allows manual trigger from GitHub Actions tab
 
 permissions:
+  contents: write # to commit new book years
   actions: write # needed by the keep-alive step
 
 jobs:
   rebuild:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Goodreads no longer exposes read dates, so record the year each new
+      # book first appears on the "read" shelf.
+      - name: Record years for newly read books
+        run: node scripts/sync-book-years.mjs
+
+      - name: Commit new book years
+        run: |
+          if git diff --quiet src/data/book-years.json; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Record years for newly read books" src/data/book-years.json
+          git push
+
       - name: Trigger Vercel deploy
         run: |
           curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
