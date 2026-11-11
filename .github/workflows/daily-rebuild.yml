@@ -5,10 +5,21 @@ on:
     - cron: '0 0 * * *' # midnight UTC every day
   workflow_dispatch: # allows manual trigger from GitHub Actions tab
 
+permissions:
+  actions: write # needed by the keep-alive step
+
 jobs:
   rebuild:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Vercel deploy
         run: |
-          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+          curl -fsS -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+
+      # GitHub disables scheduled workflows after 60 days without repo commits.
+      # Re-enabling the workflow on every run resets that timer, so it never lapses.
+      - name: Keep workflow alive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X PUT "repos/${{ github.repository }}/actions/workflows/daily-rebuild.yml/enable"

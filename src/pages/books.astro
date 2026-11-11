@@ -1,50 +1,43 @@
 ---
 import Base from '../layouts/Base.astro';
 
-const RSS_URL = 'https://www.goodreads.com/review/list_rss/74097056?key=kx9uoUy9230exwU1IfGzij49KZNfymBbf4Gll66nmn7lpCCj&shelf=read';
+// Goodreads retired shelf RSS feeds (review/list_rss) in late Oct 2026; they now 404.
+// The public shelf widget still works. It returns up to 100 books, newest read first,
+// but no read dates, so the list is no longer grouped by year.
+const WIDGET_URL = 'https://www.goodreads.com/review/custom_widget/74097056?shelf=read&sort=date_read&order=d&num_books=100&widget_id=1';
 
-let books: { title: string; author: string; link: string; dateAdded: string }[] = [];
+type Book = { title: string; author: string; link: string };
+let books: Book[] = [];
+
+// The widget is a JS file that assigns an escaped HTML string; unescape it as text.
+const unescapeJs = (s: string) =>
+  s.replace(/\\n/g, '\n').replace(/\\(["'\/\\])/g, '$1');
+
+const decodeEntities = (s: string) =>
+  s.replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&#x27;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .trim();
 
 try {
-  const res = await fetch(RSS_URL);
-  const xml = await res.text();
+  const res = await fetch(WIDGET_URL);
+  if (!res.ok) throw new Error(`Goodreads widget returned ${res.status}`);
+  const html = unescapeJs(await res.text());
 
-  const items = xml.match(/<item>([\s\S]*?)<\/item>/g) || [];
+  const entries = html.split('class="gr_custom_each_container_1"').slice(1);
 
-  books = items.map((item) => {
-    const title = item.match(/<title><!\[CDATA\[(.+?)\]\]><\/title>/)?.[1]
-      ?? item.match(/<title>(.+?)<\/title>/)?.[1]
-      ?? 'Unknown';
-
-    const author = item.match(/<author_name>(.+?)<\/author_name>/)?.[1] ?? '';
-
-    const link = item.match(/<link><!\[CDATA\[(.+?)\]\]><\/link>/)?.[1]
-      ?? item.match(/<link>(.+?)<\/link>/)?.[1]
-      ?? '#';
-
-    const dateRaw = item.match(/<user_date_added><!\[CDATA\[(.+?)\]\]><\/user_date_added>/)?.[1]
-      ?? item.match(/<pubDate><!\[CDATA\[(.+?)\]\]><\/pubDate>/)?.[1]
-      ?? '';
-
-    const dateAdded = dateRaw
-      ? new Date(dateRaw).getFullYear().toString()
-      : '';
-
-    return { title, author, link, dateAdded };
+  books = entries.flatMap((entry) => {
+    const titleMatch = entry.match(/class="gr_custom_title_1">\s*<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/);
+    if (!titleMatch) return [];
+    const author = entry.match(/class="gr_custom_author_1">[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/)?.[1] ?? '';
+    const link = decodeEntities(titleMatch[1]).replace(/\?utm_medium=.*$/, '');
+    return [{ title: decodeEntities(titleMatch[2]), author: decodeEntities(author), link }];
   });
 } catch (e) {
-  // fail silently — show empty state
+  console.warn('[books] Could not load Goodreads shelf:', e);
 }
-
-// Group by year
-const grouped = books.reduce<Record<string, typeof books>>((acc, book) => {
-  const year = book.dateAdded || 'unknown';
-  if (!acc[year]) acc[year] = [];
-  acc[year].push(book);
-  return acc;
-}, {});
-
-const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
 ---
 
 <Base
@@ -56,25 +49,18 @@ const years = Object.keys(grouped).sort((a, b) => Number(b) - Number(a));
     {books.length} books read · via <a href="https://www.goodreads.com" target="_blank" rel="noopener noreferrer">Goodreads</a>
   </p>
 
-  {years.map((year) => (
-    <section style="margin-bottom: 2.5rem;">
-      <h2 style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 1rem; margin-top: 0;">
-        {year}
-      </h2>
-      <ul style="list-style: none; padding: 0;">
-        {grouped[year].map((book) => (
-          <li style="margin-bottom: 0.75rem;">
-            <a href={book.link} target="_blank" rel="noopener noreferrer">
-              {book.title}
-            </a>
-            {book.author && (
-              <span class="text-muted"> — {book.author}</span>
-            )}
-          </li>
-        ))}
-      </ul>
-    </section>
-  ))}
+  <ul style="list-style: none; padding: 0;">
+    {books.map((book) => (
+      <li style="margin-bottom: 0.75rem;">
+        <a href={book.link} target="_blank" rel="noopener noreferrer">
+          {book.title}
+        </a>
+        {book.author && (
+          <span class="text-muted"> — {book.author}</span>
+        )}
+      </li>
+    ))}
+  </ul>
 
   {books.length === 0 && (
     <p class="text-muted">Could not load books. Check back soon.</p>
