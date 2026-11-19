@@ -124,6 +124,34 @@ const olderPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1
   </article>
 </Base>
 
+<script>
+  document.addEventListener('click', async (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.code-copy');
+    if (!btn) return;
+    e.preventDefault(); // don't toggle the <details>
+    const pre = btn.closest('details')?.querySelector('pre');
+    if (!pre) return;
+    const text = pre.textContent ?? '';
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      // Fallback for browsers/webviews that block the async Clipboard API
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.select();
+      ok = document.execCommand('copy');
+      ta.remove();
+    }
+    btn.textContent = ok ? 'Copied' : 'Copy failed';
+    setTimeout(() => (btn.textContent = 'Copy'), 1500);
+  });
+</script>
+
 <style>
   .cover-image {
     width: 100%;

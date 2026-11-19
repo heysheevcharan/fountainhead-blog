@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import rehypeCollapsibleCode from './src/lib/rehype-collapsible-code.mjs';
 
 /** Strips remark-rehype's default `user-content-` clobberPrefix from ids/hrefs (e.g. #user-content-fn-1 -> #fn-1). */
 function rehypeCleanClobberPrefix() {
@@ -42,7 +43,7 @@ export default defineConfig({
     }),
   ],
   markdown: {
-    rehypePlugins: [rehypeCleanClobberPrefix],
+    rehypePlugins: [rehypeCleanClobberPrefix, rehypeCollapsibleCode],
     shikiConfig: {
       theme: 'github-dark',
       wrap: true,
